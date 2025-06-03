@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gacha Game - Collection & Combat</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <!-- Compteur de ressources -->
+    <div id="playerResources" class="player-resources">
+        <div class="resource">
+            <span class="resource-icon">💰</span>
+            <span class="resource-amount" id="playerGold">0</span>
+            <span class="resource-label">Or</span>
+        </div>
+        <div class="resource">
+            <span class="resource-icon">💎</span>
+            <span class="resource-amount" id="playerCrystals">0</span>
+            <span class="resource-label">Cristaux</span>
+        </div>
+    </div>
+
+    <!-- Container principal -->
+    <div class="gacha-container">
+        <!-- Système d'onglets -->
+        <div class="tabs">
+            <button class="tab active" id="tabInvocation">
+                ✨ Invocation
+            </button>
+            <button class="tab" id="tabCollection">
+                📚 Collection
+            </button>
+            <button class="tab" id="tabCombat">
+                ⚔️ Combat
+            </button>
+        </div>
+
+        <!-- Onglet Invocation -->
+        <div id="invocation" class="tab-content active">
+            <h1>🎲 Gacha System</h1>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number" id="totalSummons">0</div>
+                    <div class="stat-label">Invocations</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="uniqueCount">0</div>
+                    <div class="stat-label">Personnages uniques</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="legendaryCount">0</div>
+                    <div class="stat-label">Légendaires</div>
+                </div>
+            </div>
+
+            <div class="summon-cost-info">
+                <p>💎 <strong>10 Cristaux</strong> requis pour une invocation x10</p>
+                <p>⚠️ Les cristaux sont rares ! Farmez intensivement dans la Forêt !</p>
+            </div>
+
+            <button class="summon-btn" id="summonBtn">
+                <span id="summonText">✨ Invoquer x10 (10 💎) ✨</span>
+            </button>
+
+            <div class="results" id="results"></div>
+
+            <div class="redirect-info">
+                <p>💡 Consulte tes personnages dans l'onglet <strong>Collection</strong> !</p>
+            </div>
+        </div>
+
+        <!-- Onglet Collection -->
+        <div id="collection" class="tab-content">
+            <h1>📚 Ma Collection</h1>
+            
+            <div class="collection-stats">
+                <div class="stat">
+                    <div class="stat-number" id="collectionCountDisplay">0</div>
+                    <div class="stat-label">Personnages collectés</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="equippedCount">0</div>
+                    <div class="stat-label">Équipés (max 5)</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="avgPower">0</div>
+                    <div class="stat-label">Puissance moyenne</div>
+                </div>
+            </div>
+
+            <div class="collection-filters">
+                <button class="filter-btn active" data-filter="all">Tous</button>
+                <button class="filter-btn" data-filter="legendary">Légendaires</button>
+                <button class="filter-btn" data-filter="epic">Épiques</button>
+                <button class="filter-btn" data-filter="rare">Rares</button>
+                <button class="filter-btn" data-filter="common">Communs</button>
+                <button class="filter-btn" data-filter="equipped">Équipés</button>
+            </div>
+
+            <div class="save-buttons">
+                <button class="save-btn" id="saveBtn">💾 Sauvegarder</button>
+                <button class="save-btn" id="loadBtn">📁 Charger</button>
+                <button class="save-btn delete" id="deleteBtn">🗑️ Supprimer save</button>
+            </div>
+
+            <div class="collection-grid" id="collectionGrid"></div>
+            
+            <button class="reset-btn" id="resetBtn">Réinitialiser la collection</button>
+        </div>
+
+        <!-- Onglet Combat -->
+        <div id="combat" class="tab-content">
+            <h1>⚔️ Arena de Combat</h1>
+            
+            <div class="team-info">
+                <h3>🛡️ Ton Équipe</h3>
+                <div class="team-stats">
+                    <div class="stat">
+                        <div class="stat-number" id="teamSize">0</div>
+                        <div class="stat-label">Personnages</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="teamPower">0</div>
+                        <div class="stat-label">Puissance totale</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="recommendedZone">-</div>
+                        <div class="stat-label">Zone recommandée</div>
+                    </div>
+                </div>
+                <div class="team-preview" id="teamPreview">
+                    <p>Aucun personnage équipé. Va dans l'onglet Collection pour équiper tes combattants !</p>
+                </div>
+            </div>
+
+            <div class="combat-zones">
+                <h3>🗺️ Zones de Combat</h3>
+                <div class="zones-grid" id="zonesGrid">
+                    <!-- Les zones seront générées par JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour la fiche personnage -->
+    <div id="characterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalHeader">
+                <span class="close" id="closeModal">&times;</span>
+                <div class="character-avatar-large" id="modalAvatar">🎭</div>
+                <h2 id="modalName">Nom du Personnage</h2>
+                <div id="modalRarity" class="character-rarity">RARETÉ</div>
+            </div>
+            <div class="modal-body">
+                <div class="character-info">
+                    <div class="character-title" id="modalTitle">Type • Élément</div>
+                    <div class="character-description" id="modalDescription">
+                        Description du personnage...
+                    </div>
+                </div>
+                <div class="stats-container">
+                    <div class="stats-title">📊 Statistiques</div>
+                    <div class="stat-bar">
+                        <div class="stat-name">Attaque</div>
+                        <div class="stat-value" id="attackValue">0</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar-fill stat-attack" id="attackBar"></div>
+                        </div>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-name">Défense</div>
+                        <div class="stat-value" id="defenseValue">0</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar-fill stat-defense" id="defenseBar"></div>
+                        </div>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-name">Vitesse</div>
+                        <div class="stat-value" id="speedValue">0</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar-fill stat-speed" id="speedBar"></div>
+                        </div>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-name">Magie</div>
+                        <div class="stat-value" id="magicValue">0</div>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar-fill stat-magic" id="magicBar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification de sauvegarde -->
+    <div id="saveNotification" class="save-notification"></div>
+
+    <!-- JavaScript -->
+    <script src="config/game-config.js"></script>
+    <script src="js/data/characters.js"></script>
+    <script src="js/utils/helpers.js"></script>
+    <script src="js/modules/save.js"></script>
+    <script src="js/modules/ui.js"></script>
+    <script src="js/modules/gacha.js"></script>
+    <script src="js/modules/combat.js"></script>
+    <script src="js/modules/collection.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
