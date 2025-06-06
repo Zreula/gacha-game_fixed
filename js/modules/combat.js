@@ -215,6 +215,32 @@ const CombatSystem = {
             // Sauvegarder automatiquement
             SaveSystem.autoSave();
         }
+        // Tentative de drop d'équipement
+        if (result.victory) {
+            const droppedItem = EquipmentSystem.generateRandomDrop(zoneKey);
+            if (droppedItem) {
+                // Ajouter l'objet à l'inventaire
+                ShopSystem.addItemToInventory(droppedItem);
+                
+                // Notification de drop avec couleur selon la rareté
+                const rarityColors = {
+                    'common': '⚪',
+                    'rare': '🔵', 
+                    'epic': '🟣',
+                    'legendary': '🟡'
+                };
+                const colorIcon = rarityColors[droppedItem.rarity] || '⚪';
+                
+                if (typeof UI !== 'undefined' && UI.showNotification) {
+                    UI.showNotification(
+                        `${colorIcon} ÉQUIPEMENT TROUVÉ !\n${droppedItem.icon} ${droppedItem.name}\n(${droppedItem.rarity.toUpperCase()})`, 
+                        'success'
+                    );
+                }
+                
+                console.log(`📦 Drop d'équipement: ${droppedItem.name} (${droppedItem.rarity})`);
+            }
+        }
             // Tentative de drop d'équipement
         const droppedItem = EquipmentSystem.generateRandomDrop(zoneKey);
         if (droppedItem) {

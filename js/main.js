@@ -55,6 +55,8 @@ function initializeGame() {
         if (typeof GachaSystem !== 'undefined') GachaSystem.init();
         if (typeof CombatSystem !== 'undefined') CombatSystem.init();
         if (typeof CollectionSystem !== 'undefined') CollectionSystem.init();
+        if (typeof EquipmentSystem !== 'undefined') EquipmentSystem.init();
+        if (typeof ShopSystem !== 'undefined') ShopSystem.init();
         
         // 5. Mettre à jour l'interface
         updateAllUI();
@@ -196,7 +198,7 @@ function setupGlobalEventListeners() {
         if (typeof UI !== 'undefined' && UI.updateEquipmentTab) {
             UI.updateEquipmentTab();
         }
-        EventManager.emit('tab_changed', 'equipment');
+        // EventManager.emit('tab_changed', 'equipment');
     });
     
     // Boutons de sauvegarde
