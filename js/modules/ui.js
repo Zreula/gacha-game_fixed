@@ -334,42 +334,78 @@ const UI = {
         return item;
     },
     
-    // Création d'une zone de combat
-    createCombatZone(zoneKey, zoneData) {
-        const zoneCard = document.createElement('div');
-        zoneCard.className = 'zone-card';
-        zoneCard.dataset.zone = zoneKey;
-        zoneCard.onclick = () => CombatSystem.startMission(zoneKey);
-        
-        zoneCard.innerHTML = `
-            <div class="zone-icon">${zoneData.icon}</div>
-            <div class="zone-name">${zoneData.name}</div>
-            <div class="zone-difficulty">Puissance: ${zoneData.minPower}-${zoneData.maxPower}</div>
-            <div class="zone-rewards">💰 +${zoneData.baseGold[0]}-${zoneData.baseGold[1]} Or | 💎 ${zoneData.crystalDrop[0]}-${zoneData.crystalDrop[1]} (${Math.round(zoneData.crystalChance * 100)}%)</div>
-            <div class="zone-status" id="${zoneKey}Status">Cliquer pour démarrer</div>
-            <div class="mission-progress" id="${zoneKey}Progress">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="${zoneKey}ProgressFill"></div>
-                </div>
-                <div class="progress-text" id="${zoneKey}ProgressText">0%</div>
-                <div class="mission-timer" id="${zoneKey}Timer">${GAME_CONFIG.COMBAT.MISSION_DURATIONS[zoneKey]}s restantes</div>
-            </div>
-        `;
-        
-        return zoneCard;
-    },
+// Création d'une zone de combat
+createCombatZone(zoneKey, zoneData) {
+    const zoneCard = document.createElement('div');
+    zoneCard.className = 'zone-card';
+    zoneCard.dataset.zone = zoneKey;
+    zoneCard.onclick = () => CombatSystem.startMission(zoneKey);
     
-    // Génération de toutes les zones de combat
+    // Vérifications de sécurité pour éviter les erreurs
+    const baseGold = zoneData.baseGold || [0, 0];
+    const crystalDrop = zoneData.crystalDrop || [0, 0];
+    const crystalChance = zoneData.crystalChance || 0;
+    const missionDuration = (GAME_CONFIG.COMBAT && GAME_CONFIG.COMBAT.MISSION_DURATIONS && GAME_CONFIG.COMBAT.MISSION_DURATIONS[zoneKey]) || 10;
+    
+    zoneCard.innerHTML = `
+        <div class="zone-icon">${zoneData.icon || '❓'}</div>
+        <div class="zone-name">${zoneData.name || 'Zone Inconnue'}</div>
+        <div class="zone-difficulty">Puissance: ${zoneData.minPower || 0}-${zoneData.maxPower || 0}</div>
+        <div class="zone-rewards">💰 +${baseGold[0]}-${baseGold[1]} Or | 💎 ${crystalDrop[0]}-${crystalDrop[1]} (${Math.round(crystalChance * 100)}%)</div>
+        <div class="zone-status" id="${zoneKey}Status">Cliquer pour démarrer</div>
+        <div class="mission-progress" id="${zoneKey}Progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="${zoneKey}ProgressFill"></div>
+            </div>
+            <div class="progress-text" id="${zoneKey}ProgressText">0%</div>
+            <div class="mission-timer" id="${zoneKey}Timer">${missionDuration}s restantes</div>
+        </div>
+    `;
+    
+    return zoneCard;
+},
+    
+    // Génération de toutes les zones de combat avec séparation visuelle
     generateCombatZones() {
         const zonesGrid = this.elements.zonesGrid;
         zonesGrid.innerHTML = '';
         
+        // Section Missions Standard
+        const standardSection = document.createElement('div');
+        standardSection.className = 'zones-section';
+        standardSection.innerHTML = `
+            <h3 class="section-title standard">🗺️ Missions Standard</h3>
+            <div class="zones-grid-section" id="standardZones"></div>
+        `;
+        zonesGrid.appendChild(standardSection);
+        
+        // Section Missions Extrêmes
+        const extremeSection = document.createElement('div');
+        extremeSection.className = 'zones-section';
+        extremeSection.innerHTML = `
+            <h3 class="section-title extreme">⚠️ Missions Extrêmes</h3>
+            <div class="zones-grid-section" id="extremeZones"></div>
+        `;
+        zonesGrid.appendChild(extremeSection);
+        
+        const standardGrid = document.getElementById('standardZones');
+        const extremeGrid = document.getElementById('extremeZones');
+        
+        // Séparer les zones par difficulté
         Object.entries(GAME_CONFIG.COMBAT.ZONES).forEach(([zoneKey, zoneData]) => {
             const zoneCard = this.createCombatZone(zoneKey, zoneData);
-            zonesGrid.appendChild(zoneCard);
+            
+            // Missions standard (puissance max <= 2500)
+            if (zoneData.maxPower <= 2500) {
+                standardGrid.appendChild(zoneCard);
+            } 
+            // Missions extrêmes (puissance max > 2500)
+            else {
+                extremeGrid.appendChild(zoneCard);
+            }
         });
         
-        console.log('🗺️ Zones de combat générées');
+        console.log('🗺️ Zones de combat générées avec séparation');
     },
     
     // Mise à jour de l'aperçu de l'équipe
