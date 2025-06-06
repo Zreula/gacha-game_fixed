@@ -111,6 +111,12 @@ const UI = {
                 targetContent.style.opacity = '1';
                 targetContent.style.transform = 'translateY(0)';
             }, 50);
+
+            // Mettre à jour le contenu spécifique à l'onglet
+        if (tabName === 'equipment' && this.updateEquipmentTab) 
+            {
+            setTimeout(() => this.updateEquipmentTab(), 100);
+            }
         }
     },
     
@@ -334,6 +340,118 @@ const UI = {
         return item;
     },
     
+    // Mettre à jour l'onglet équipement
+    updateEquipmentTab() 
+    {
+        const container = document.getElementById('equipmentContainer');
+        if (!container) return;
+        
+        const equippedCharacters = Array.from(gameState.equippedCharacters);
+        
+        // Mettre à jour les statistiques
+        this.updateEquipmentStats();
+        
+        if (equippedCharacters.length === 0) {
+            container.innerHTML = `
+                <div class="equipment-message">
+                    <p>Aucun personnage équipé dans votre équipe.</p>
+                    <p>Allez dans l'onglet <strong>Collection</strong> pour équiper des personnages !</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Afficher les personnages équipés
+        container.innerHTML = '';
+        
+        equippedCharacters.forEach(characterName => {
+            const character = findCharacterByName(characterName);
+            if (character) {
+                const card = this.createCharacterEquipmentCard(character);
+                container.appendChild(card);
+            }
+        });
+    },
+
+    // Créer une carte d'équipement pour un personnage
+    createCharacterEquipmentCard(character) 
+    {
+        const card = document.createElement('div');
+        card.className = `character-equipment-card ${character.rarity}`;
+        
+        const currentPower = EquipmentSystem.calculateCharacterPower(character.name);
+        const currentEquipment = gameState.characterEquipment[character.name] || {};
+        
+        card.innerHTML = `
+            <div class="character-header">
+                <div class="character-avatar-equipment ${character.rarity}">
+                    ${character.emoji}
+                </div>
+                <div class="character-info-equipment">
+                    <div class="character-name-equipment">${character.name}</div>
+                    <div class="character-power-equipment">⚡ Puissance: ${currentPower}</div>
+                </div>
+            </div>
+            
+            <div class="equipment-slots">
+                ${this.createEquipmentSlot('weapon', '⚔️', 'Arme', currentEquipment.weapon, character.name)}
+                ${this.createEquipmentSlot('armor', '🛡️', 'Armure', currentEquipment.armor, character.name)}
+                ${this.createEquipmentSlot('accessory', '💍', 'Accessoire', currentEquipment.accessory, character.name)}
+            </div>
+        `;
+        
+        return card;
+    },
+
+    // Créer un slot d'équipement
+    createEquipmentSlot(slotType, icon, label, equipmentId, characterName) 
+    {
+        const isEquipped = !!equipmentId;
+        const equipment = isEquipped ? EquipmentSystem.getEquipmentById(equipmentId) : null;
+        
+        const slotContent = isEquipped && equipment ? 
+            `<div class="slot-icon">${equipment.icon}</div>
+            <div class="slot-name">${equipment.name}</div>` :
+            `<div class="slot-icon">${icon}</div>
+            <div class="slot-name">Vide</div>`;
+        
+        return `
+            <div class="equipment-slot-container">
+                <div class="slot-label">${label}</div>
+                <div class="equipment-slot-display ${isEquipped ? 'equipped' : ''}" 
+                    onclick="UI.openInventoryModal('${characterName}', '${slotType}')">
+                    ${slotContent}
+                </div>
+            </div>
+        `;
+    },
+
+    // Mettre à jour les stats de l'équipement
+    updateEquipmentStats() 
+    {
+        const equippedCount = gameState.equippedCharacters.size;
+        const totalPower = Array.from(gameState.equippedCharacters).reduce((sum, name) => {
+            return sum + EquipmentSystem.calculateCharacterPower(name);
+        }, 0);
+        const inventoryCount = gameState.inventory ? gameState.inventory.length : 0;
+        
+        const equippedTeamCountEl = document.getElementById('equippedTeamCount');
+        const totalTeamPowerEl = document.getElementById('totalTeamPower');
+        const inventoryCountEl = document.getElementById('inventoryCount');
+        
+        if (equippedTeamCountEl) equippedTeamCountEl.textContent = equippedCount;
+        if (totalTeamPowerEl) totalTeamPowerEl.textContent = totalPower;
+        if (inventoryCountEl) inventoryCountEl.textContent = inventoryCount;
+    },
+
+    // Ouvrir la modal d'inventaire (à implémenter plus tard)
+    openInventoryModal(characterName, slotType) 
+    {
+        console.log(`Ouvrir inventaire pour ${characterName}, slot: ${slotType}`);
+        // Pour l'instant, juste un message
+        this.showNotification(`🎒 Modal d'inventaire pour ${slotType} (à venir)`, 'info');
+    },
+
 // Création d'une zone de combat
 createCombatZone(zoneKey, zoneData) {
     const zoneCard = document.createElement('div');
@@ -521,5 +639,6 @@ createCombatZone(zoneKey, zoneData) {
         this.showNotification(`Erreur: ${message}`, 'error');
     }
 };
+
 
 console.log('🎨 Module UI chargé');

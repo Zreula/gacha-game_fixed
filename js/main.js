@@ -35,7 +35,9 @@ function initializeGame() {
         
         // 1. Initialiser l'interface utilisateur
         UI.init();
-        
+        EquipmentSystem.init();
+        ShopSystem.init();
+
         // 2. Initialiser le système de sauvegarde
         if (typeof SaveSystem !== 'undefined') {
             SaveSystem.init();
@@ -184,6 +186,17 @@ function setupGlobalEventListeners() {
     safeAddEventListener('tabCombat', 'click', () => {
         if (typeof UI !== 'undefined') UI.switchTab('combat');
         if (typeof CombatSystem !== 'undefined') CombatSystem.updateCombatInfo();
+    });
+
+    // Ajouter cette ligne avec les autres gestionnaires d'onglets
+    safeAddEventListener('tabEquipment', 'click', () => {
+        if (typeof UI !== 'undefined' && UI.switchTab) {
+            UI.switchTab('equipment');
+        }
+        if (typeof UI !== 'undefined' && UI.updateEquipmentTab) {
+            UI.updateEquipmentTab();
+        }
+        EventManager.emit('tab_changed', 'equipment');
     });
     
     // Boutons de sauvegarde

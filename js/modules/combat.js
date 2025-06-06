@@ -215,7 +215,12 @@ const CombatSystem = {
             // Sauvegarder automatiquement
             SaveSystem.autoSave();
         }
-        
+            // Tentative de drop d'équipement
+        const droppedItem = EquipmentSystem.generateRandomDrop(zoneKey);
+        if (droppedItem) {
+            ShopSystem.addItemToInventory(droppedItem);
+            // Notification de drop
+        }
         // Supprimer la mission active
         delete gameState.activeMissions[zoneKey];
         

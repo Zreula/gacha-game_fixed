@@ -39,6 +39,9 @@
             <button class="tab" id="tabCombat">
                 ⚔️ Combat
             </button>
+            <button class="tab" id="tabEquipment">
+                ⚔️ Équipement
+            </button>
         </div>
 
         <!-- Onglet Invocation -->
@@ -113,6 +116,31 @@
             <div class="collection-grid" id="collectionGrid"></div>
     </div>
 
+        <div id="equipment" class="tab-content">
+            <h1>⚔️ Équipement de l'Équipe</h1>
+            
+            <div class="equipment-info">
+                <div class="stat">
+                    <div class="stat-number" id="equippedTeamCount">0</div>
+                    <div class="stat-label">Personnages équipés</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="totalTeamPower">0</div>
+                    <div class="stat-label">Puissance totale</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="inventoryCount">0</div>
+                    <div class="stat-label">Objets en inventaire</div>
+                </div>
+            </div>
+
+            <div id="equipmentContainer" class="equipment-container">
+                <div class="equipment-message">
+                    <p>Aucun personnage équipé dans votre équipe.</p>
+                    <p>Allez dans l'onglet <strong>Collection</strong> pour équiper des personnages !</p>
+                </div>
+            </div>
+        </div>
         <!-- Onglet Combat -->
         <div id="combat" class="tab-content">
             <h1>⚔️ Arena de Combat</h1>
@@ -210,6 +238,8 @@
     <script src="js/modules/gacha.js"></script>
     <script src="js/modules/combat.js"></script>
     <script src="js/modules/collection.js"></script>
+    <script src="js/modules/equipment.js"></script>
+    <script src="js/modules/shop.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
