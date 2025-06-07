@@ -137,8 +137,8 @@ const CollectionSystem = {
             // Vérifier la limite d'équipement
             if (gameState.equippedCharacters.size >= GAME_CONFIG.COMBAT.MAX_EQUIPPED) {
                 UI.showNotification(
-                    `⚠️ Limite atteinte ! Tu ne peux équiper que ${GAME_CONFIG.COMBAT.MAX_EQUIPPED} personnages maximum.\n` +
-                    'Déséquipe un personnage pour en équiper un autre.', 
+                    `⚠️ Limit Reached.\n` +
+                    'Unequip a hero to select add a new one.', 
                     'error'
                 );
                 return;
@@ -178,7 +178,7 @@ const CollectionSystem = {
         // Notification de succès
         const character = findCharacterByName(characterName);
         if (character) {
-            UI.showNotification(`⚔️ ${character.emoji} ${characterName} équipé !`, 'success');
+            UI.showNotification(`⚔️ ${character.emoji} ${characterName} equipped !`, 'success');
         }
     },
     
@@ -200,7 +200,7 @@ const CollectionSystem = {
         // Notification
         const character = findCharacterByName(characterName);
         if (character) {
-            UI.showNotification(`🔓 ${character.emoji} ${characterName} déséquipé`, 'success');
+            UI.showNotification(`🔓 ${character.emoji} ${characterName} Unequipped`, 'success');
         }
     },
     
@@ -231,7 +231,7 @@ const CollectionSystem = {
         this.updateCollection();
         
         if (toEquip.length > 0) {
-            UI.showNotification(`🤖 ${toEquip.length} meilleurs personnages équipés automatiquement !`, 'success');
+            UI.showNotification(`🤖 ${toEquip.length} auto equipped the best set of heroes!`, 'success');
         }
         
         SaveSystem.autoSave();
@@ -434,7 +434,7 @@ const CollectionSystem = {
             }
         });
         
-        UI.showNotification(`🔧 ${recommendations.length} amélioration(s) appliquée(s) !`, 'success');
+        UI.showNotification(`🔧 ${recommendations.length} upgrades done!`, 'success');
         SaveSystem.autoSave();
     },
     
