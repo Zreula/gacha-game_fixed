@@ -255,6 +255,12 @@ function setupGlobalEventListeners() {
             SaveSystem.autoSave();
         }
     });
+
+    safeAddEventListener('closeInventoryModal', 'click', () => {
+    if (typeof UI !== 'undefined' && UI.closeInventoryModal) {
+        UI.closeInventoryModal();
+    }
+    });
     
     console.log('🎮 Gestionnaires d\'événements configurés');
 }

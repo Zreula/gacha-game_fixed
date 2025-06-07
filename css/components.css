@@ -467,7 +467,56 @@
     font-size: 0.8rem;
     color: #666;
 }
+/* ===== BOUTONS D'INVENTAIRE ===== */
+.inventory-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 0 20px;
+}
 
+.inventory-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.inventory-btn.unequip {
+    background: #e74c3c;
+    color: white;
+}
+
+.inventory-btn.unequip:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+}
+
+.inventory-btn.filter {
+    background: #3498db;
+    color: white;
+}
+
+.inventory-btn.filter:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+.inventory-btn:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.inventory-empty {
+    text-align: center;
+    color: #666;
+    padding: 40px 20px;
+    font-style: italic;
+}
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .equipment-container {

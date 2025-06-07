@@ -261,6 +261,194 @@ const UI = {
         modal.style.display = 'block';
     },
     
+// Ouvrir la modal d'inventaire
+openInventoryModal(characterName, slotType) {
+    console.log(`🎒 Ouverture inventaire pour ${characterName}, slot: ${slotType}`);
+    
+    const modal = document.getElementById('inventoryModal');
+    const title = document.getElementById('inventoryModalTitle');
+    const grid = document.getElementById('inventoryGrid');
+    const emptyDiv = document.getElementById('inventoryEmpty');
+    const unequipBtn = document.getElementById('unequipBtn');
+    
+    if (!modal || !title || !grid) return;
+    
+    // Stocker les infos dans la modal pour usage ultérieur
+    modal.dataset.character = characterName;
+    modal.dataset.slot = slotType;
+    
+    // Mettre à jour le titre
+    const slotNames = {
+        'weapon': 'Arme',
+        'armor': 'Armure', 
+        'accessory': 'Accessoire'
+    };
+    title.textContent = `Inventaire - ${slotNames[slotType] || slotType}`;
+    
+    // Vérifier si quelque chose est équipé
+    const currentEquipment = gameState.characterEquipment[characterName];
+    const hasEquipped = currentEquipment && currentEquipment[slotType];
+    
+    // Bouton déséquiper
+    if (unequipBtn) {
+        unequipBtn.style.display = hasEquipped ? 'block' : 'none';
+        unequipBtn.onclick = () => this.unequipFromModal(characterName, slotType);
+    }
+    
+    // Remplir la grille d'inventaire
+    this.populateInventoryGrid(slotType);
+    
+    // Afficher la modal
+    modal.style.display = 'block';
+},
+
+// Remplir la grille d'inventaire
+populateInventoryGrid(slotType) {
+    const grid = document.getElementById('inventoryGrid');
+    const emptyDiv = document.getElementById('inventoryEmpty');
+    
+    if (!grid || !emptyDiv) return;
+    
+    // Obtenir les objets du bon type depuis l'inventaire
+    const inventory = gameState.inventory || [];
+    const relevantItems = inventory.filter(item => item.type === slotType);
+    
+    grid.innerHTML = '';
+    
+    if (relevantItems.length === 0) {
+        grid.style.display = 'none';
+        emptyDiv.style.display = 'block';
+        return;
+    }
+    
+    grid.style.display = 'grid';
+    emptyDiv.style.display = 'none';
+    
+    // Créer les cartes d'objets
+    relevantItems.forEach((item, index) => {
+        const itemCard = this.createInventoryItemCard(item, index);
+        grid.appendChild(itemCard);
+    });
+},
+
+// Créer une carte d'objet d'inventaire
+createInventoryItemCard(item, index) {
+    const card = document.createElement('div');
+    card.className = `inventory-item ${item.rarity}`;
+    card.onclick = () => this.equipFromInventory(item, index);
+    
+    // Calculer les stats totales
+    const totalStats = (item.stats.attack || 0) + (item.stats.defense || 0) + 
+                      (item.stats.speed || 0) + (item.stats.magic || 0);
+    
+    card.innerHTML = `
+        <div class="inventory-item-icon">${item.icon}</div>
+        <div class="inventory-item-name">${item.name}</div>
+        <div class="inventory-item-rarity ${item.rarity}">${item.rarity.toUpperCase()}</div>
+        <div class="inventory-item-stats">
+            <div>⚔️ ${item.stats.attack || 0} | 🛡️ ${item.stats.defense || 0}</div>
+            <div>⚡ ${item.stats.speed || 0} | ✨ ${item.stats.magic || 0}</div>
+            <div style="font-weight: bold; margin-top: 5px;">Total: ${totalStats}</div>
+        </div>
+    `;
+    
+    return card;
+},
+
+    // Équiper un objet depuis l'inventaire
+    equipFromInventory(item, inventoryIndex) {
+        const modal = document.getElementById('inventoryModal');
+        const characterName = modal.dataset.character;
+        const slotType = modal.dataset.slot;
+        
+        if (!characterName || !slotType) return;
+        
+        // Déséquiper l'objet actuel s'il y en a un
+        const currentEquipment = gameState.characterEquipment[characterName];
+        if (currentEquipment && currentEquipment[slotType]) {
+            const currentItemId = currentEquipment[slotType];
+            const currentItem = EquipmentSystem.getEquipmentById(currentItemId);
+            
+            if (currentItem) {
+                // Remettre l'objet actuel dans l'inventaire
+                this.addItemToInventory(currentItem);
+            }
+        }
+        
+        // Équiper le nouvel objet
+        if (EquipmentSystem.equipItem(characterName, item.id, slotType)) {
+            // Supprimer l'objet de l'inventaire
+            gameState.inventory.splice(inventoryIndex, 1);
+            
+            // Fermer la modal
+            this.closeInventoryModal();
+            
+            // Mettre à jour l'affichage
+            this.updateEquipmentTab();
+            
+            // Notification
+            this.showNotification(`✅ ${item.name} équipé sur ${characterName} !`, 'success');
+            
+            // Sauvegarder
+            if (typeof SaveSystem !== 'undefined' && SaveSystem.autoSave) {
+                SaveSystem.autoSave();
+            }
+        }
+    },
+
+    // Déséquiper depuis la modal
+    unequipFromModal(characterName, slotType) {
+        const currentEquipment = gameState.characterEquipment[characterName];
+        if (!currentEquipment || !currentEquipment[slotType]) return;
+        
+        const currentItemId = currentEquipment[slotType];
+        const currentItem = EquipmentSystem.getEquipmentById(currentItemId);
+        
+        if (currentItem && EquipmentSystem.unequipItem(characterName, slotType)) {
+            // Remettre l'objet dans l'inventaire
+            this.addItemToInventory(currentItem);
+            
+            // Fermer la modal
+            this.closeInventoryModal();
+            
+            // Mettre à jour l'affichage
+            this.updateEquipmentTab();
+            
+            // Notification
+            this.showNotification(`🗑️ ${currentItem.name} déséquipé de ${characterName}`, 'success');
+            
+            // Sauvegarder
+            if (typeof SaveSystem !== 'undefined' && SaveSystem.autoSave) {
+                SaveSystem.autoSave();
+            }
+        }
+    },
+
+    // Ajouter un objet à l'inventaire
+    addItemToInventory(item) {
+        if (!gameState.inventory) {
+            gameState.inventory = [];
+        }
+        
+        gameState.inventory.push({
+            id: item.id,
+            name: item.name,
+            type: item.type,
+            rarity: item.rarity,
+            icon: item.icon,
+            stats: item.stats,
+            description: item.description,
+            acquiredAt: Date.now()
+        });
+    },
+
+    // Fermer la modal d'inventaire
+    closeInventoryModal() {
+        const modal = document.getElementById('inventoryModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    },
     // Mise à jour d'une barre de statistique
     updateStatBar(statName, value) {
         const valueElement = this.elements[`${statName}Value`];
@@ -443,15 +631,6 @@ const UI = {
         if (totalTeamPowerEl) totalTeamPowerEl.textContent = totalPower;
         if (inventoryCountEl) inventoryCountEl.textContent = inventoryCount;
     },
-
-    // Ouvrir la modal d'inventaire (à implémenter plus tard)
-    openInventoryModal(characterName, slotType) 
-    {
-        console.log(`Ouvrir inventaire pour ${characterName}, slot: ${slotType}`);
-        // Pour l'instant, juste un message
-        this.showNotification(`🎒 Modal d'inventaire pour ${slotType} (à venir)`, 'info');
-    },
-
 // Création d'une zone de combat
 createCombatZone(zoneKey, zoneData) {
     const zoneCard = document.createElement('div');

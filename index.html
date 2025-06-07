@@ -225,7 +225,28 @@
             </div>
         </div>
     </div>
-
+    <!-- Modal d'inventaire -->
+    <div id="inventoryModal" class="inventory-modal">
+        <div class="inventory-modal-content">
+            <div class="inventory-modal-header">
+                <h2 class="inventory-modal-title" id="inventoryModalTitle">Inventaire - Arme</h2>
+                <span class="inventory-close" id="closeInventoryModal">&times;</span>
+            </div>
+            <div class="inventory-modal-body">
+                <div class="inventory-actions">
+                    <button class="inventory-btn unequip" id="unequipBtn">🗑️ Déséquiper</button>
+                    <button class="inventory-btn filter" id="filterBtn">🔍 Filtrer</button>
+                </div>
+                <div class="inventory-grid" id="inventoryGrid">
+                    <!-- Les objets seront générés par JavaScript -->
+                </div>
+                <div class="inventory-empty" id="inventoryEmpty" style="display: none;">
+                    <p>Aucun objet de ce type dans votre inventaire.</p>
+                    <p>Explorez les missions pour trouver des équipements !</p>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Notification de sauvegarde -->
     <div id="saveNotification" class="save-notification"></div>
 
