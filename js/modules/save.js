@@ -106,7 +106,8 @@ const SaveSystem = {
                 legendaryCount: gameState.legendaryCount,
                 playerGold: gameState.playerGold,
                 crystals: gameState.crystals,
-                currentFilter: gameState.currentFilter
+                currentFilter: gameState.currentFilter,
+                inventory: gameState.inventory || []
             },
             stats: {
                 gachaStats: GachaSystem.getStats(),
@@ -200,6 +201,7 @@ const SaveSystem = {
         gameState.playerGold = savedState.playerGold || 0;
         gameState.crystals = savedState.crystals || 0;
         gameState.currentFilter = savedState.currentFilter || 'all';
+        gameState.inventory = savedState.inventory || [];
         
         // Réinitialiser les missions
         gameState.activeMissions = {};

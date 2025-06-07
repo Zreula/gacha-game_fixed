@@ -607,7 +607,7 @@ createInventoryItemCard(item, index) {
             <div class="equipment-slot-container">
                 <div class="slot-label">${label}</div>
                 <div class="equipment-slot-display ${isEquipped ? 'equipped' : ''}" 
-                    onclick="UI.openInventoryModal('${characterName}', '${slotType}')">
+                    onclick="UI.openInventoryModal('${characterName.replace(/'/g, "\\'")}', '${slotType}')">
                     ${slotContent}
                 </div>
             </div>
