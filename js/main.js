@@ -9,8 +9,7 @@ let gameState = {
     crystals: 2,      // Valeur par défaut pour test
     currentFilter: 'all',
     activeMissions: {},
-    idleMissions: {},
-    inventory: []     // Inventaire d'équipements
+    idleMissions: {}
 };
 
 // Initialisation du jeu
@@ -36,19 +35,14 @@ function initializeGame() {
         
         // 1. Initialiser l'interface utilisateur
         UI.init();
-        
-        // 2. Initialiser le NOUVEAU système d'équipement
-        EquipmentSystemV2.init();
-        
-        // 3. Initialiser les autres systèmes
         EquipmentSystem.init();
         ShopSystem.init();
 
-        // 4. Initialiser le système de sauvegarde
+        // 2. Initialiser le système de sauvegarde
         if (typeof SaveSystem !== 'undefined') {
             SaveSystem.init();
             
-            // 5. Charger une sauvegarde existante ou créer un nouveau jeu
+            // 3. Charger une sauvegarde existante ou créer un nouveau jeu
             if (!SaveSystem.loadGame()) {
                 createNewGame();
             }
@@ -57,21 +51,22 @@ function initializeGame() {
             createNewGame();
         }
         
-        // 6. Initialiser les systèmes de jeu
+        // 4. Initialiser les systèmes de jeu
         if (typeof GachaSystem !== 'undefined') GachaSystem.init();
         if (typeof CombatSystem !== 'undefined') CombatSystem.init();
         if (typeof CollectionSystem !== 'undefined') CollectionSystem.init();
+        if (typeof EquipmentSystem !== 'undefined') EquipmentSystem.init();
         if (typeof ShopSystem !== 'undefined') ShopSystem.init();
         
-        // 7. Mettre à jour l'interface
+        // 5. Mettre à jour l'interface
         updateAllUI();
         
-        // 8. Démarrer la sauvegarde automatique si activée
+        // 6. Démarrer la sauvegarde automatique si activée
         if (GAME_CONFIG && GAME_CONFIG.SAVE && GAME_CONFIG.SAVE.AUTO_SAVE && typeof SaveSystem !== 'undefined') {
             startAutoSave();
         }
         
-        // 9. Ajouter les gestionnaires d'événements globaux
+        // 7. Ajouter les gestionnaires d'événements globaux
         setupGlobalEventListeners();
         
         console.log('✅ Jeu initialisé avec succès !');
@@ -106,7 +101,6 @@ function createNewGame() {
     gameState.playerGold = 256;
     gameState.crystals = 2;
     gameState.currentFilter = 'all';
-    gameState.inventory = [];
     
     // Ajouter George le Noob comme personnage de départ
     if (typeof CHARACTERS_DB !== 'undefined') {
@@ -119,18 +113,6 @@ function createNewGame() {
             };
             console.log('👤 George le Noob ajouté comme personnage de départ');
         }
-    }
-    
-    // Ajouter quelques objets de départ dans l'inventaire
-    if (typeof EquipmentSystemV2 !== 'undefined') {
-        const starterItems = ['rusty_sword', 'leather_vest', 'copper_ring'];
-        starterItems.forEach(itemId => {
-            const item = EquipmentSystem.getEquipmentById(itemId);
-            if (item) {
-                EquipmentSystemV2.addToInventory(item);
-            }
-        });
-        console.log('🎒 Objets de départ ajoutés à l\'inventaire');
     }
 }
 
@@ -216,6 +198,7 @@ function setupGlobalEventListeners() {
         if (typeof UI !== 'undefined' && UI.updateEquipmentTab) {
             UI.updateEquipmentTab();
         }
+        // EventManager.emit('tab_changed', 'equipment');
     });
     
     // Boutons de sauvegarde
@@ -274,9 +257,9 @@ function setupGlobalEventListeners() {
     });
 
     safeAddEventListener('closeInventoryModal', 'click', () => {
-        if (typeof UI !== 'undefined' && UI.closeInventoryModal) {
-            UI.closeInventoryModal();
-        }
+    if (typeof UI !== 'undefined' && UI.closeInventoryModal) {
+        UI.closeInventoryModal();
+    }
     });
     
     console.log('🎮 Gestionnaires d\'événements configurés');
@@ -298,12 +281,6 @@ function resetGame() {
         // Arrêter toutes les missions
         if (typeof CombatSystem !== 'undefined') {
             CombatSystem.stopAllMissions();
-        }
-        
-        // Réinitialiser le nouveau système d'équipement
-        if (typeof EquipmentSystemV2 !== 'undefined') {
-            EquipmentSystemV2.state.inventory = [];
-            EquipmentSystemV2.state.characterEquipment = {};
         }
         
         // Créer un nouveau jeu

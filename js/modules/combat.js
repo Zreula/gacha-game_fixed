@@ -76,21 +76,16 @@ const CombatSystem = {
         return true;
     },
     
-    // Calculer la puissance totale de l'équipe AVEC LE NOUVEAU SYSTÈME
-    calculateTeamPower() {
-        const equippedArray = Array.from(gameState.equippedCharacters).map(name => 
-            findCharacterByName(name)
-        ).filter(char => char !== undefined);
-        
-        // UTILISER LE NOUVEAU SYSTÈME D'ÉQUIPEMENT
-        return equippedArray.reduce((sum, char) => {
-            if (typeof EquipmentSystemV2 !== 'undefined') {
-                return sum + EquipmentSystemV2.getCharacterPower(char.name);
-            } else {
-                // Fallback vers l'ancien système
-                return sum + EquipmentSystem.calculateCharacterPower(char.name);
-            }
-        }, 0);
+    // Calculer la puissance totale de l'équipe
+calculateTeamPower() {
+    const equippedArray = Array.from(gameState.equippedCharacters).map(name => 
+        findCharacterByName(name)
+    ).filter(char => char !== undefined);
+    
+    // NOUVELLE VERSION : Utiliser la puissance avec équipement
+    return equippedArray.reduce((sum, char) => {
+        return sum + EquipmentSystem.calculateCharacterPower(char.name);
+    }, 0);
     },
     
     // Démarrer une mission en mode idle
@@ -221,18 +216,12 @@ const CombatSystem = {
             // Sauvegarder automatiquement
             SaveSystem.autoSave();
         }
-        
-        // Tentative de drop d'équipement AVEC LE NOUVEAU SYSTÈME
+        // Tentative de drop d'équipement
         if (result.victory) {
             const droppedItem = EquipmentSystem.generateRandomDrop(zoneKey);
             if (droppedItem) {
-                // UTILISER LE NOUVEAU SYSTÈME pour ajouter l'objet
-                if (typeof EquipmentSystemV2 !== 'undefined') {
-                    EquipmentSystemV2.addToInventory(droppedItem);
-                } else {
-                    // Fallback vers l'ancien système
-                    ShopSystem.addItemToInventory(droppedItem);
-                }
+                // Ajouter l'objet à l'inventaire
+                ShopSystem.addItemToInventory(droppedItem);
                 
                 // Notification de drop avec couleur selon la rareté
                 const rarityColors = {
@@ -253,7 +242,12 @@ const CombatSystem = {
                 console.log(`📦 Drop d'équipement: ${droppedItem.name} (${droppedItem.rarity})`);
             }
         }
-        
+            // Tentative de drop d'équipement
+        const droppedItem = EquipmentSystem.generateRandomDrop(zoneKey);
+        if (droppedItem) {
+            ShopSystem.addItemToInventory(droppedItem);
+            // Notification de drop
+        }
         // Supprimer la mission active
         delete gameState.activeMissions[zoneKey];
         
