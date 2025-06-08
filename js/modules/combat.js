@@ -77,14 +77,15 @@ const CombatSystem = {
     },
     
     // Calculer la puissance totale de l'équipe
-    calculateTeamPower() {
-        const equippedArray = Array.from(gameState.equippedCharacters).map(name => 
-            findCharacterByName(name)
-        ).filter(char => char !== undefined);
-        
-        return equippedArray.reduce((sum, char) => 
-            sum + char.stats.attack + char.stats.defense + char.stats.speed + char.stats.magic, 0
-        );
+calculateTeamPower() {
+    const equippedArray = Array.from(gameState.equippedCharacters).map(name => 
+        findCharacterByName(name)
+    ).filter(char => char !== undefined);
+    
+    // NOUVELLE VERSION : Utiliser la puissance avec équipement
+    return equippedArray.reduce((sum, char) => {
+        return sum + EquipmentSystem.calculateCharacterPower(char.name);
+    }, 0);
     },
     
     // Démarrer une mission en mode idle

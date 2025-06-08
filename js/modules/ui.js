@@ -736,9 +736,10 @@ createCombatZone(zoneKey, zoneData) {
             findCharacterByName(name)
         ).filter(char => char !== undefined);
         
-        const totalPower = equippedArray.reduce((sum, char) => 
-            sum + char.stats.attack + char.stats.defense + char.stats.speed + char.stats.magic, 0
-        );
+        // Utiliser la même méthode que le combat
+        const totalPower = equippedArray.reduce((sum, char) => {
+            return sum + EquipmentSystem.calculateCharacterPower(char.name);
+        }, 0);
         
         this.elements.teamSize.textContent = gameState.equippedCharacters.size;
         this.elements.teamPower.textContent = totalPower;
