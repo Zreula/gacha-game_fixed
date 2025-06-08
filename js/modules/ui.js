@@ -417,24 +417,26 @@ const UI = {
 
     // Ajouter un objet à l'inventaire (sans duplication)
     addItemToInventory(item) {
+        console.log('🔍 AVANT ajout:', gameState.inventory.length, 'objets');
+        
         if (!gameState.inventory) {
             gameState.inventory = [];
         }
         
-        // Créer une nouvelle instance pour éviter les références partagées
         const newItem = {
             id: item.id,
             name: item.name,
             type: item.type,
             rarity: item.rarity,
             icon: item.icon,
-            stats: { ...item.stats }, // Copie des stats pour éviter les références
+            stats: { ...item.stats },
             description: item.description,
             acquiredAt: Date.now()
         };
         
         gameState.inventory.push(newItem);
-        console.log(`📦 ${item.name} ajouté à l'inventaire`);
+        console.log('🔍 APRÈS ajout:', gameState.inventory.length, 'objets');
+        console.log('📦', item.name, 'ajouté à l\'inventaire');
     },
 
     // Fermer la modal d'inventaire
