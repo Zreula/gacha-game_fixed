@@ -13,10 +13,28 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 80, 40, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(80, 40, 120, 0.4) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e, #0f3460);
             color: #fff;
             min-height: 100vh;
             padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255, 100, 50, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(50, 100, 255, 0.1) 0%, transparent 20%);
+            pointer-events: none;
+            z-index: -1;
         }
 
         .container {
@@ -28,31 +46,82 @@
             text-align: center;
             margin-bottom: 30px;
             color: #ffd700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            font-size: 2.5em;
+            text-shadow: 
+                3px 3px 0px #8B4513,
+                6px 6px 10px rgba(0,0,0,0.8),
+                0 0 30px rgba(255,215,0,0.3);
+            font-size: 2.8em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        h1::before {
+            content: '⚔️';
+            position: absolute;
+            left: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8em;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        h1::after {
+            content: '🛡️';
+            position: absolute;
+            right: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.8em;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px #ffd700;
+            }
+            to {
+                text-shadow: 0 0 20px #ffd700, 0 0 30px #ff8c00;
+            }
         }
 
         .game-layout {
             display: grid;
-            grid-template-columns: 1fr 400px;
+            grid-template-columns: 1fr 450px;
             gap: 30px;
             margin-bottom: 30px;
         }
 
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
         .heroes-section {
-            background: rgba(255,255,255,0.1);
+            background: 
+                linear-gradient(145deg, rgba(139, 69, 19, 0.3), rgba(160, 82, 45, 0.2)),
+                rgba(0,0,0,0.4);
             border-radius: 15px;
             padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255,215,0,0.3);
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.1);
         }
 
         .team-section {
-            background: rgba(255,255,255,0.1);
+            background: 
+                linear-gradient(145deg, rgba(25, 25, 112, 0.3), rgba(72, 61, 139, 0.2)),
+                rgba(0,0,0,0.4);
             border-radius: 15px;
             padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(100,149,237,0.3);
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.1);
         }
 
         .section-title {
@@ -72,24 +141,58 @@
         }
 
         .hero-card {
-            background: linear-gradient(145deg, #2a2a3e, #1e1e32);
+            background: 
+                linear-gradient(145deg, rgba(139, 69, 19, 0.6), rgba(101, 67, 33, 0.8)),
+                rgba(0,0,0,0.3);
             border-radius: 12px;
             padding: 15px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(205, 133, 63, 0.4);
             position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .hero-card:hover::before {
+            left: 100%;
         }
 
         .hero-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 15px 35px rgba(255,215,0,0.3),
+                0 5px 15px rgba(0,0,0,0.4);
             border-color: #ffd700;
+            background: 
+                linear-gradient(145deg, rgba(139, 69, 19, 0.8), rgba(160, 82, 45, 0.9)),
+                rgba(0,0,0,0.3);
         }
 
         .hero-card.selected {
             border-color: #00ff88;
-            background: linear-gradient(145deg, #2a3e2a, #1e321e);
+            background: 
+                linear-gradient(145deg, rgba(34, 139, 34, 0.6), rgba(0, 100, 0, 0.8)),
+                rgba(0,0,0,0.3);
+            box-shadow: 
+                0 0 20px rgba(0,255,136,0.4),
+                0 5px 15px rgba(0,0,0,0.4);
+        }
+
+        .hero-card.selected:hover {
+            box-shadow: 
+                0 0 25px rgba(0,255,136,0.6),
+                0 15px 35px rgba(0,255,136,0.3);
         }
 
         .hero-card.disabled {
@@ -179,17 +282,46 @@
         }
 
         .boss-info {
-            background: rgba(255,0,0,0.2);
+            background: 
+                radial-gradient(circle at center, rgba(220, 20, 60, 0.3), rgba(139, 0, 0, 0.4)),
+                rgba(0,0,0,0.6);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
-            border: 2px solid #ff4444;
+            border: 3px solid #ff4444;
+            box-shadow: 
+                0 0 30px rgba(255, 68, 68, 0.4),
+                inset 0 0 20px rgba(255, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .boss-info::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                conic-gradient(from 0deg, transparent, rgba(255, 68, 68, 0.1), transparent);
+            animation: rotate 8s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .boss-name {
             font-size: 1.8em;
-            color: #ff4444;
+            color: #ff6b6b;
             margin-bottom: 10px;
+            text-shadow: 
+                2px 2px 0px #8B0000,
+                4px 4px 10px rgba(255,68,68,0.6);
+            font-weight: bold;
         }
 
         .boss-hp {
@@ -351,6 +483,62 @@
             transform: translateY(-1px);
         }
 
+        .synergy-guide {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .guide-title {
+            font-size: 1.2em;
+            color: #ffd700;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 8px;
+        }
+
+        .synergy-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .synergy-item {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid #666;
+            transition: all 0.3s ease;
+        }
+
+        .synergy-item:hover {
+            border-left-color: #ffd700;
+            background: rgba(255,215,0,0.1);
+        }
+
+        .synergy-item.balanced {
+            border-left-color: #00ff88;
+            background: rgba(0,255,136,0.1);
+        }
+
+        .synergy-item.balanced:hover {
+            background: rgba(0,255,136,0.2);
+        }
+
+        .synergy-name {
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 4px;
+            font-size: 0.95em;
+        }
+
+        .synergy-desc {
+            color: #ccc;
+            font-size: 0.85em;
+        }
+
         @media (max-width: 1200px) {
             .game-layout {
                 grid-template-columns: 1fr;
@@ -401,22 +589,58 @@
                 </div>
             </div>
             
-            <div class="team-section">
-                <h2 class="section-title">👥 Your Team (0/6)</h2>
-                <div class="team-slots" id="teamSlots">
-                    <!-- Team slots will be generated by JavaScript -->
+            <div class="side-panel">
+                <div class="team-section">
+                    <h2 class="section-title">👥 Your Party (0/6)</h2>
+                    <div class="team-slots" id="teamSlots">
+                        <!-- Team slots will be generated by JavaScript -->
+                    </div>
+                    
+                    <div class="synergy-info" id="synergyInfo" style="display: none;">
+                        <strong>💫 Active Synergies:</strong>
+                        <div id="synergyList"></div>
+                    </div>
                 </div>
                 
-                <div class="synergy-info" id="synergyInfo" style="display: none;">
-                    <strong>💫 Active Synergies:</strong>
-                    <div id="synergyList"></div>
+                <div class="synergy-guide">
+                    <h3 class="guide-title">📜 Synergy Guide</h3>
+                    <div class="synergy-list">
+                        <div class="synergy-item">
+                            <div class="synergy-name">⚔️ Warrior's Might</div>
+                            <div class="synergy-desc">3+ Warriors: ATK +20%</div>
+                        </div>
+                        <div class="synergy-item">
+                            <div class="synergy-name">🏹 Hunter's Mark</div>
+                            <div class="synergy-desc">2+ Hunters: CRIT +10%</div>
+                        </div>
+                        <div class="synergy-item">
+                            <div class="synergy-name">🔮 Arcane Mastery</div>
+                            <div class="synergy-desc">2+ Mages: ATK +15%</div>
+                        </div>
+                        <div class="synergy-item">
+                            <div class="synergy-name">🔥 Shadow Pact</div>
+                            <div class="synergy-desc">2+ Warlocks: ATK +18%</div>
+                        </div>
+                        <div class="synergy-item">
+                            <div class="synergy-name">🛡️ Divine Protection</div>
+                            <div class="synergy-desc">2+ Paladins: Durability +25%</div>
+                        </div>
+                        <div class="synergy-item">
+                            <div class="synergy-name">✨ Holy Light</div>
+                            <div class="synergy-desc">2+ Priests: Regeneration +30%</div>
+                        </div>
+                        <div class="synergy-item balanced">
+                            <div class="synergy-name">🌟 Balanced Party</div>
+                            <div class="synergy-desc">5+ Different Classes: All Stats +10%</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         
         <div class="combat-section">
             <div class="boss-info">
-                <div class="boss-name">🐉 Abyssal Dragon</div>
+                <div class="boss-name">🐲 Deathwing the Destroyer</div>
                 <div class="boss-hp">HP: <span id="bossHp">1000000</span> / 1000000</div>
                 <div class="hp-bar">
                     <div class="hp-fill" id="hpFill" style="width: 100%"></div>
