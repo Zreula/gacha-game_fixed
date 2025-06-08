@@ -93,8 +93,13 @@ const SaveSystem = {
         }
     },
     
-    // Créer les données de sauvegarde
+    // Créer les données de sauvegarde AVEC LE NOUVEAU SYSTÈME
     createSaveData() {
+        // Synchroniser le nouveau système avec gameState avant la sauvegarde
+        if (typeof EquipmentSystemV2 !== 'undefined') {
+            EquipmentSystemV2.syncToGameState();
+        }
+        
         return {
             version: GAME_CONFIG.VERSION,
             timestamp: Date.now(),
@@ -107,10 +112,16 @@ const SaveSystem = {
                 playerGold: gameState.playerGold,
                 crystals: gameState.crystals,
                 currentFilter: gameState.currentFilter,
-                inventory: gameState.inventory || []
+                inventory: gameState.inventory || [],
+                
+                // NOUVEAU: Sauvegarder l'état du système d'équipement V2
+                equipmentSystemV2: typeof EquipmentSystemV2 !== 'undefined' ? {
+                    inventory: EquipmentSystemV2.state.inventory,
+                    characterEquipment: EquipmentSystemV2.state.characterEquipment
+                } : null
             },
             stats: {
-                gachaStats: GachaSystem.getStats(),
+                gachaStats: typeof GachaSystem !== 'undefined' ? GachaSystem.getStats() : {},
                 playTime: this.calculatePlayTime(),
                 lastPlayed: Date.now()
             },
@@ -120,47 +131,59 @@ const SaveSystem = {
         };
     },
     
-    // Charger une sauvegarde
+    // Charger une sauvegarde AVEC LE NOUVEAU SYSTÈME
     loadGame() {
-    if (!this.isSupported) {
-        console.warn('localStorage non supporté - impossible de charger');
-        return false;
-    }
-    
-    try {
-        const saveData = localStorage.getItem(GAME_CONFIG.SAVE.KEY);
-        
-        if (!saveData) {
-            console.log('📁 Aucune sauvegarde trouvée');
+        if (!this.isSupported) {
+            console.warn('localStorage non supporté - impossible de charger');
             return false;
         }
         
-        const gameData = JSON.parse(saveData);
-        
-        // CORRECTION: Vérifier que gameData.gameState existe
-        if (!gameData.gameState) {
-            console.warn('⚠️ Sauvegarde invalide - gameState manquant');
-            localStorage.removeItem(GAME_CONFIG.SAVE.KEY); // Supprimer la sauvegarde corrompue
-            return false;
-        }
-        
-        // Vérifier la version de sauvegarde
-        if (!this.isCompatibleVersion(gameData.version)) {
-            console.warn(`⚠️ Version de sauvegarde incompatible: ${gameData.version}`);
-            UI.showNotification('⚠️ Sauvegarde d\'une version incompatible', 'error');
-            return false;
-        }
-        
-        // Arrêter toutes les missions en cours
-        if (typeof CombatSystem !== 'undefined' && CombatSystem.stopAllMissions) {
-            CombatSystem.stopAllMissions();
-        }
-        
-        // Restaurer l'état du jeu
-        this.restoreGameState(gameData.gameState);
+        try {
+            const saveData = localStorage.getItem(GAME_CONFIG.SAVE.KEY);
+            
+            if (!saveData) {
+                console.log('📁 Aucune sauvegarde trouvée');
+                return false;
+            }
+            
+            const gameData = JSON.parse(saveData);
+            
+            // Vérifier que gameData.gameState existe
+            if (!gameData.gameState) {
+                console.warn('⚠️ Sauvegarde invalide - gameState manquant');
+                localStorage.removeItem(GAME_CONFIG.SAVE.KEY); // Supprimer la sauvegarde corrompue
+                return false;
+            }
+            
+            // Vérifier la version de sauvegarde
+            if (!this.isCompatibleVersion(gameData.version)) {
+                console.warn(`⚠️ Version de sauvegarde incompatible: ${gameData.version}`);
+                UI.showNotification('⚠️ Sauvegarde d\'une version incompatible', 'error');
+                return false;
+            }
+            
+            // Arrêter toutes les missions en cours
+            if (typeof CombatSystem !== 'undefined' && CombatSystem.stopAllMissions) {
+                CombatSystem.stopAllMissions();
+            }
             
             // Restaurer l'état du jeu
             this.restoreGameState(gameData.gameState);
+            
+            // NOUVEAU: Restaurer l'état du système d'équipement V2
+            if (gameData.gameState.equipmentSystemV2 && typeof EquipmentSystemV2 !== 'undefined') {
+                EquipmentSystemV2.state.inventory = gameData.gameState.equipmentSystemV2.inventory || [];
+                EquipmentSystemV2.state.characterEquipment = gameData.gameState.equipmentSystemV2.characterEquipment || {};
+                
+                // Synchroniser avec gameState
+                EquipmentSystemV2.syncToGameState();
+                
+                console.log('🔧 Système d\'équipement V2 restauré');
+            } else if (typeof EquipmentSystemV2 !== 'undefined') {
+                // Migration automatique de l'ancien système vers le nouveau
+                console.log('🔄 Migration vers le système d\'équipement V2...');
+                EquipmentSystemV2.migrateOldData();
+            }
             
             // Si pas de personnages, ajouter George
             if (gameState.ownedCharacters.size === 0) {
@@ -293,6 +316,13 @@ const SaveSystem = {
                     // Restaurer l'état
                     this.restoreGameState(gameData.gameState);
                     
+                    // Restaurer le système d'équipement V2 si disponible
+                    if (gameData.gameState.equipmentSystemV2 && typeof EquipmentSystemV2 !== 'undefined') {
+                        EquipmentSystemV2.state.inventory = gameData.gameState.equipmentSystemV2.inventory || [];
+                        EquipmentSystemV2.state.characterEquipment = gameData.gameState.equipmentSystemV2.characterEquipment || {};
+                        EquipmentSystemV2.syncToGameState();
+                    }
+                    
                     // Sauvegarder immédiatement
                     this.autoSave();
                     
@@ -333,7 +363,13 @@ const SaveSystem = {
                 charactersOwned: gameData.gameState.ownedCharacters?.length || 0,
                 totalSummons: gameData.gameState.totalSummons || 0,
                 crystals: gameData.gameState.crystals || 0,
-                gold: gameData.gameState.playerGold || 0
+                gold: gameData.gameState.playerGold || 0,
+                
+                // NOUVEAU: Informations sur le système d'équipement V2
+                equipmentV2: gameData.gameState.equipmentSystemV2 ? {
+                    inventorySize: gameData.gameState.equipmentSystemV2.inventory?.length || 0,
+                    equippedCharacters: Object.keys(gameData.gameState.equipmentSystemV2.characterEquipment || {}).length
+                } : null
             };
             
         } catch (error) {
@@ -412,6 +448,15 @@ const SaveSystem = {
         console.log('Info:', info);
         console.log('Données actuelles:', gameData);
         console.log('Taille:', JSON.stringify(gameData).length, 'caractères');
+        
+        // Afficher les détails du nouveau système d'équipement
+        if (typeof EquipmentSystemV2 !== 'undefined') {
+            console.log('Système d\'équipement V2:', {
+                inventory: EquipmentSystemV2.state.inventory.length,
+                characterEquipment: Object.keys(EquipmentSystemV2.state.characterEquipment).length
+            });
+        }
+        
         console.groupEnd();
     }
 };
