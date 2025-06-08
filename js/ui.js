@@ -23,6 +23,40 @@ export class UIManager {
     update() {
         this.updatePlayerInfo();
         this.updateActiveProfessionProgress();
+        
+        // Mettre à jour l'inventaire moins fréquemment pour éviter le spam
+        if (!this.lastInventoryUpdate) this.lastInventoryUpdate = 0;
+        const now = Date.now();
+        if (now - this.lastInventoryUpdate > 1000) { // Toutes les secondes
+            this.updateInventoryNumbers();
+            this.lastInventoryUpdate = now;
+        }
+    }
+
+    updateInventoryNumbers() {
+        // Mettre à jour uniquement les nombres dans l'inventaire sans reconstruire l'interface
+        const activeTab = document.querySelector('.tab-content.active');
+        if (activeTab && activeTab.id === 'inventory') {
+            this.updateInventoryUI();
+        }
+        
+        // Mettre à jour les quantités dans les métiers actifs
+        const professionsTab = document.getElementById('professions');
+        if (professionsTab && professionsTab.classList.contains('active')) {
+            const gatheringProfs = ['mining', 'herbalism', 'skinning'];
+            gatheringProfs.forEach(profName => {
+                if (this.gameState.professions[profName].isActive) {
+                    const professionElements = document.querySelectorAll('.profession.gathering');
+                    professionElements.forEach(element => {
+                        const professionTitle = element.querySelector('h3').textContent;
+                        const expectedTitle = this.getProfessionDisplayName(profName);
+                        if (professionTitle === expectedTitle) {
+                            this.updateResourceQuantities(element, profName);
+                        }
+                    });
+                }
+            });
+        }
     }
 
     updatePlayerInfo() {
@@ -106,6 +140,11 @@ export class UIManager {
                     Améliorer (+0.1x)
                 </button>
             </div>
+            
+            <div class="resource-list">
+                <h5 style="color: #90CAF9; margin-bottom: 0.5rem;">Ressources collectées:</h5>
+                ${this.createResourceList(profName)}
+            </div>
         `;
 
         // Ajouter les event listeners
@@ -114,21 +153,22 @@ export class UIManager {
     }
 
     createGatheringProgress(profName, profData) {
-        if (!profData.gatheringProgress) return '';
+        if (!profData.gatheringProgress && profData.gatheringProgress !== 0) return '';
         
         const resourceData = this.getResourceData(profName, profData);
         if (!resourceData) return '';
         
         const baseTime = resourceData.baseTime;
         const actualTime = baseTime / profData.efficiency;
-        const progress = (profData.gatheringProgress / actualTime) * 100;
+        const progress = Math.min((profData.gatheringProgress / actualTime) * 100, 100);
+        const timeRemaining = Math.max(0, actualTime - profData.gatheringProgress);
         
         return `
             <div class="gathering-progress">
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${progress}%"></div>
+                    <div class="progress-fill gathering-progress-fill" style="width: ${progress}%"></div>
                 </div>
-                <small>Récolte en cours... (${actualTime.toFixed(1)}s)</small>
+                <small class="gathering-time-text">Récolte en cours... (${timeRemaining.toFixed(1)}s restant)</small>
             </div>
         `;
     }
@@ -346,26 +386,67 @@ export class UIManager {
                     const expectedTitle = this.getProfessionDisplayName(profName);
                     
                     if (professionTitle === expectedTitle) {
-                        const progressElement = element.querySelector('.gathering-progress .progress-fill');
-                        if (progressElement) {
+                        const progressElement = element.querySelector('.gathering-progress-fill');
+                        const timeText = element.querySelector('.gathering-time-text');
+                        
+                        if (progressElement && timeText) {
                             const resourceData = this.getResourceData(profName, profData);
                             if (resourceData) {
                                 const actualTime = resourceData.baseTime / profData.efficiency;
-                                const progress = (profData.gatheringProgress / actualTime) * 100;
-                                progressElement.style.width = `${Math.min(progress, 100)}%`;
+                                const progress = Math.min((profData.gatheringProgress / actualTime) * 100, 100);
+                                const timeRemaining = Math.max(0, actualTime - profData.gatheringProgress);
                                 
-                                // Mettre à jour le texte du temps restant
-                                const timeText = element.querySelector('.gathering-progress small');
-                                if (timeText) {
-                                    const timeRemaining = Math.max(0, actualTime - profData.gatheringProgress);
-                                    timeText.textContent = `Récolte en cours... (${timeRemaining.toFixed(1)}s restant)`;
-                                }
+                                progressElement.style.width = `${progress}%`;
+                                timeText.textContent = `Récolte en cours... (${timeRemaining.toFixed(1)}s restant)`;
                             }
                         }
+                        
+                        // Mettre à jour les quantités de ressources affichées
+                        this.updateResourceQuantities(element, profName);
                     }
                 });
             }
         });
+    }
+
+    updateResourceQuantities(professionElement, profName) {
+        // Mettre à jour les quantités affichées dans la section métier
+        const resourceItems = professionElement.querySelectorAll('.resource-item');
+        
+        resourceItems.forEach(item => {
+            const resourceName = item.querySelector('.resource-name');
+            const resourceAmount = item.querySelector('.resource-amount');
+            
+            if (resourceName && resourceAmount) {
+                const resourceKey = this.getResourceKeyFromDisplay(resourceName.textContent, profName);
+                if (resourceKey && this.gameState.inventory.resources[resourceKey] !== undefined) {
+                    resourceAmount.textContent = this.gameState.inventory.resources[resourceKey];
+                }
+            }
+        });
+    }
+
+    createResourceList(profName) {
+        const resourceMappings = {
+            mining: ['copper_ore', 'tin_ore', 'iron_ore', 'mithril_ore', 'coal'],
+            herbalism: ['peacebloom', 'silverleaf', 'earthroot', 'mageroyal'],
+            skinning: ['light_leather', 'medium_leather', 'heavy_leather', 'linen_cloth']
+        };
+        
+        const relevantResources = resourceMappings[profName] || [];
+        
+        return relevantResources.map(resourceKey => {
+            const amount = this.gameState.inventory.resources[resourceKey] || 0;
+            const itemInfo = this.inventoryManager.getItemInfo(resourceKey);
+            const displayName = itemInfo ? itemInfo.name : resourceKey;
+            
+            return `
+                <div class="resource-item">
+                    <span class="resource-name">${displayName}</span>
+                    <span class="resource-amount">${amount}</span>
+                </div>
+            `;
+        }).join('');
     }
 
     // Méthodes utilitaires

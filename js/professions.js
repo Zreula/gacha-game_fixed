@@ -183,6 +183,7 @@ export class ProfessionManager {
         // Arrêter les autres métiers de récolte
         for (const prof of ['mining', 'herbalism', 'skinning']) {
             this.gameState.professions[prof].isActive = false;
+            this.gameState.professions[prof].gatheringProgress = 0;
         }
         
         this.gameState.professions[profession].isActive = true;
