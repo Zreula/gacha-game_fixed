@@ -383,27 +383,25 @@ equipFromInventory(item, inventoryIndex) {
 
     // Déséquiper depuis la modal
     unequipFromModal(characterName, slotType) {
-            console.log('🚨 UNEQUIP DÉSACTIVÉ TEMPORAIREMENT');
-                return;
-        // const currentEquipment = gameState.characterEquipment[characterName];
-        //if (!currentEquipment || !currentEquipment[slotType]) return;
+        const currentEquipment = gameState.characterEquipment[characterName];
+        if (!currentEquipment || !currentEquipment[slotType]) return;
         
-        //const currentItemId = currentEquipment[slotType];
-        //const currentItem = EquipmentSystem.getEquipmentById(currentItemId);
+        const currentItemId = currentEquipment[slotType];
+        const currentItem = EquipmentSystem.getEquipmentById(currentItemId);
         
-        //if (currentItem && EquipmentSystem.unequipItem(characterName, slotType)) {
-            // ✅ IMPORTANT : Remettre l'objet dans l'inventaire
-           // this.addItemToInventory(currentItem);
+        if (currentItem && EquipmentSystem.unequipItem(characterName, slotType)) {
+            // Remettre l'objet dans l'inventaire
+            this.addItemToInventory(currentItem);
             
-         //   this.closeInventoryModal();
-         //   this.updateEquipmentTab();
-         //   
-         //   this.showNotification(`🗑️ ${currentItem.name} déséquipé de ${characterName}`, 'success');
+            this.closeInventoryModal();
+            this.updateEquipmentTab();
             
-          //  if (typeof SaveSystem !== 'undefined' && SaveSystem.autoSave) {
-         //       SaveSystem.autoSave();
-         //   }
-      //  }
+            this.showNotification(`🗑️ ${currentItem.name} déséquipé de ${characterName}`, 'success');
+            
+            if (typeof SaveSystem !== 'undefined' && SaveSystem.autoSave) {
+                SaveSystem.autoSave();
+            }
+        }
     },
 
     // Ajouter un objet à l'inventaire (sans duplication)
