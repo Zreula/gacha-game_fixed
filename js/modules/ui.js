@@ -356,11 +356,11 @@ const UI = {
     },
 
 equipFromInventory(item, inventoryIndex) {
-    console.log(`🔧 Équipement de ${item.name} sur ${characterName} slot: ${slotType}`);
-    
     const modal = document.getElementById('inventoryModal');
     const characterName = modal.dataset.character;
     const slotType = modal.dataset.slot;
+    
+    console.log(`🔧 Équipement de ${item.name} sur ${characterName} slot: ${slotType}`);
     
     if (!characterName || !slotType) return;
     
