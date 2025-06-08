@@ -325,10 +325,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.game = new WoWIdleGame();
 });
         this.uiManager.update();
-    {
         // Continuer la boucle
         requestAnimationFrame(() => this.gameLoop());
-    }
 
     handleOfflineProgress() 
     {
