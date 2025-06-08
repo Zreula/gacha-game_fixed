@@ -517,6 +517,29 @@
     padding: 40px 20px;
     font-style: italic;
 }
+
+/* Objets déjà équipés */
+.inventory-item.equipped-elsewhere {
+    opacity: 0.6;
+    border-color: #e74c3c !important;
+    background: linear-gradient(135deg, #fadbd8, #fff) !important;
+}
+
+.inventory-item.equipped-elsewhere:hover {
+    cursor: not-allowed;
+    transform: none;
+}
+
+.equipped-indicator {
+    font-size: 0.7rem;
+    color: #e74c3c;
+    font-weight: bold;
+    margin: 2px 0;
+    background: rgba(231, 76, 60, 0.1);
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .equipment-container {
