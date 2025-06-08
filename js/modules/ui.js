@@ -356,8 +356,7 @@ const UI = {
     },
 
 equipFromInventory(item, inventoryIndex) {
-    console.log('🚨 TEST SIMPLE - Item:', item.name, 'Index:', inventoryIndex);
-    console.log('🚨 Inventaire AVANT:', gameState.inventory.length);
+    console.log(`🔧 Équipement de ${item.name} sur ${characterName} slot: ${slotType}`);
     
     const modal = document.getElementById('inventoryModal');
     const characterName = modal.dataset.character;
@@ -365,20 +364,48 @@ equipFromInventory(item, inventoryIndex) {
     
     if (!characterName || !slotType) return;
     
-    // VERSION ULTRA-SIMPLE : juste supprimer de l'inventaire et équiper
+    console.log(`🔧 Inventaire AVANT: ${gameState.inventory.length}`);
     
-    // 1. Supprimer l'objet de l'inventaire
-    gameState.inventory.splice(inventoryIndex, 1);
-    console.log('🚨 Inventaire APRÈS suppression:', gameState.inventory.length);
+    // ÉTAPE 1: Vérifier s'il y a déjà un objet équipé dans ce slot
+    const currentEquipment = gameState.characterEquipment[characterName];
+    const currentEquippedId = currentEquipment && currentEquipment[slotType];
     
-    // 2. Équiper directement (sans déséquiper l'ancien)
+    if (currentEquippedId) {
+        // Il y a déjà un objet équipé, le déséquiper d'abord
+        console.log(`🔧 Déséquipement de ${currentEquippedId}`);
+        const currentItem = EquipmentSystem.getEquipmentById(currentEquippedId);
+        
+        if (currentItem) {
+            // Remettre l'ancien objet dans l'inventaire
+            this.addItemToInventory(currentItem);
+            console.log(`📦 ${currentItem.name} ajouté à l'inventaire`);
+        }
+        
+        // Déséquiper l'ancien objet
+        EquipmentSystem.unequipItem(characterName, slotType);
+    }
+    
+    console.log(`🔧 Inventaire MILIEU: ${gameState.inventory.length}`);
+    
+    // ÉTAPE 2: Équiper le nouvel objet
     EquipmentSystem.equipItem(characterName, item.id, slotType);
     
-    // 3. Fermer et rafraîchir
+    // ÉTAPE 3: Supprimer le nouvel objet de l'inventaire
+    console.log(`🔧 Suppression index ${inventoryIndex}`);
+    gameState.inventory.splice(inventoryIndex, 1);
+    
+    console.log(`🔧 Inventaire APRÈS: ${gameState.inventory.length}`);
+    
+    // ÉTAPE 4: Fermer et rafraîchir
     this.closeInventoryModal();
     this.updateEquipmentTab();
     
     this.showNotification(`✅ ${item.name} équipé sur ${characterName} !`, 'success');
+    
+    // Sauvegarder
+    if (typeof SaveSystem !== 'undefined' && SaveSystem.autoSave) {
+        SaveSystem.autoSave();
+    }
 },
 
     // Déséquiper depuis la modal
