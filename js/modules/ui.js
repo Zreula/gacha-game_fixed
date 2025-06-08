@@ -334,26 +334,17 @@ const UI = {
     // Créer une carte d'objet d'inventaire
     createInventoryItemCard(item, index) {
         const card = document.createElement('div');
-        
-        // Vérifier si l'objet est équipé sur quelqu'un
-        const equippedOn = this.findCharacterWithEquipment(item.id);
-        const isEquipped = !!equippedOn;
-        
-        card.className = `inventory-item ${item.rarity} ${isEquipped ? 'equipped-elsewhere' : ''}`;
+        card.className = `inventory-item ${item.rarity}`;
         card.onclick = () => this.equipFromInventory(item, index);
         
         // Calculer les stats totales
         const totalStats = (item.stats.attack || 0) + (item.stats.defense || 0) + 
                         (item.stats.speed || 0) + (item.stats.magic || 0);
         
-        const equippedIndicator = isEquipped ? 
-            `<div class="equipped-indicator">⚔️ Équipé sur ${equippedOn}</div>` : '';
-        
         card.innerHTML = `
             <div class="inventory-item-icon">${item.icon}</div>
             <div class="inventory-item-name">${item.name}</div>
             <div class="inventory-item-rarity ${item.rarity}">${item.rarity.toUpperCase()}</div>
-            ${equippedIndicator}
             <div class="inventory-item-stats">
                 <div>⚔️ ${item.stats.attack || 0} | 🛡️ ${item.stats.defense || 0}</div>
                 <div>⚡ ${item.stats.speed || 0} | ✨ ${item.stats.magic || 0}</div>
@@ -400,19 +391,6 @@ const UI = {
             }
         }
     },
-    // Trouver quel personnage a un équipement spécifique
-    findCharacterWithEquipment(equipmentId) {
-        for (const [characterName, equipment] of Object.entries(gameState.characterEquipment)) {
-            if (equipment) {
-                for (const slot of Object.values(equipment)) {
-                    if (slot === equipmentId) {
-                        return characterName;
-                    }
-                }
-            }
-        }
-        return null;
-    },
 
     // Déséquiper depuis la modal
     unequipFromModal(characterName, slotType) {
@@ -436,23 +414,27 @@ const UI = {
             }
         }
     },
-    
-    // Ajouter un objet à l'inventaire
+
+    // Ajouter un objet à l'inventaire (sans duplication)
     addItemToInventory(item) {
         if (!gameState.inventory) {
             gameState.inventory = [];
         }
         
-        gameState.inventory.push({
+        // Créer une nouvelle instance pour éviter les références partagées
+        const newItem = {
             id: item.id,
             name: item.name,
             type: item.type,
             rarity: item.rarity,
             icon: item.icon,
-            stats: item.stats,
+            stats: { ...item.stats }, // Copie des stats pour éviter les références
             description: item.description,
             acquiredAt: Date.now()
-        });
+        };
+        
+        gameState.inventory.push(newItem);
+        console.log(`📦 ${item.name} ajouté à l'inventaire`);
     },
 
     // Fermer la modal d'inventaire
