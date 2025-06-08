@@ -362,6 +362,9 @@ equipFromInventory(item, inventoryIndex) {
     
     if (!characterName || !slotType) return;
     
+    console.log('🔧 Équipement de', item.name, 'sur', characterName, 'slot:', slotType);
+    console.log('🔧 Inventaire AVANT:', gameState.inventory.length);
+    
     // Déséquiper l'ancien objet s'il existe
     const currentEquipment = gameState.characterEquipment[characterName];
     if (currentEquipment && currentEquipment[slotType]) {
@@ -369,14 +372,19 @@ equipFromInventory(item, inventoryIndex) {
         const currentItem = EquipmentSystem.getEquipmentById(currentItemId);
         
         if (currentItem) {
+            console.log('🔧 Déséquipement de', currentItem.name);
             EquipmentSystem.unequipItem(characterName, slotType);
             this.addItemToInventory(currentItem);
         }
     }
     
+    console.log('🔧 Inventaire MILIEU:', gameState.inventory.length);
+    
     // Équiper le nouvel objet
     if (EquipmentSystem.equipItem(characterName, item.id, slotType)) {
+        console.log('🔧 Suppression index', inventoryIndex);
         gameState.inventory.splice(inventoryIndex, 1);
+        console.log('🔧 Inventaire APRÈS:', gameState.inventory.length);
         
         this.closeInventoryModal();
         this.updateEquipmentTab();
