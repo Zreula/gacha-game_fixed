@@ -962,6 +962,7 @@
                     slot.className = 'team-slot filled';
                     
                     if (gameState.combat) {
+                        const deathOverlay = !heroState.alive ? '<div class="death-overlay">💀 DEAD</div>' : '';
                         slot.innerHTML = `
                             <div class="slot-hero">${getRoleIcon(hero.role)} ${hero.name}</div>
                             <div style="font-size: 0.8em; color: #ccc;">${hero.role}</div>
@@ -970,7 +971,7 @@
                                 <div class="mini-hp-bar">
                                     <div class="mini-hp-fill" style="width: ${(heroState.currentHp / heroState.maxHp) * 100}%"></div>
                                 </div>
-                                ${!heroState.alive ? '<div class="death-overlay">💀 DEAD</div>' : ''}
+                                ${deathOverlay}
                             </div>
                         `;
                     } else {
@@ -1200,17 +1201,7 @@
             }
             
             updateBestScoreDisplay();
-            updateTeamDisplay(); // Keep showing final HP states
-        } Record! ${Math.floor(gameState.totalDamage).toLocaleString()} damage!`);
-            }
-            
-            updateBestScoreDisplay();
-            updateTeamDisplay(); // Keep showing final HP states
-        } Record! ${Math.floor(gameState.totalDamage).toLocaleString()} damage!`);
-            }
-            
-            updateBestScoreDisplay();
-        }
+            updateTeamDisplay();
 
         function resetBoss() {
             gameState.bossHp = gameState.maxBossHp;
