@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combat de Boss - Composition d'Équipe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-size: 2.5em;
+        }
+
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .heroes-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .team-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #ffd700;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 10px;
+        }
+
+        .heroes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .hero-card {
+            background: linear-gradient(145deg, #2a2a3e, #1e1e32);
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .hero-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-color: #ffd700;
+        }
+
+        .hero-card.selected {
+            border-color: #00ff88;
+            background: linear-gradient(145deg, #2a3e2a, #1e321e);
+        }
+
+        .hero-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .hero-name {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #ffd700;
+        }
+
+        .hero-role {
+            font-size: 0.9em;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        .hero-stats {
+            font-size: 0.8em;
+        }
+
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+        }
+
+        .team-slots {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .team-slot {
+            background: rgba(0,0,0,0.3);
+            border: 2px dashed #555;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .team-slot.filled {
+            border: 2px solid #00ff88;
+            background: linear-gradient(145deg, #2a3e2a, #1e321e);
+        }
+
+        .team-slot.empty {
+            border-color: #ffd700;
+        }
+
+        .slot-hero {
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .remove-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #cc3333;
+        }
+
+        .combat-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+
+        .boss-info {
+            background: rgba(255,0,0,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #ff4444;
+        }
+
+        .boss-name {
+            font-size: 1.8em;
+            color: #ff4444;
+            margin-bottom: 10px;
+        }
+
+        .boss-hp {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .hp-bar {
+            background: #333;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .hp-fill {
+            background: linear-gradient(90deg, #ff4444, #ff6666);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .combat-btn {
+            background: linear-gradient(145deg, #ff4444, #cc3333);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .combat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,68,68,0.3);
+        }
+
+        .combat-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .timer {
+            font-size: 1.5em;
+            margin: 20px 0;
+            color: #ffd700;
+        }
+
+        .damage-display {
+            font-size: 2em;
+            margin: 20px 0;
+            color: #00ff88;
+            font-weight: bold;
+        }
+
+        .best-score {
+            background: rgba(255,215,0,0.2);
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .score-title {
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .floating-damage {
+            position: absolute;
+            color: #ff6666;
+            font-weight: bold;
+            font-size: 1.2em;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+        }
+
+        .synergy-info {
+            background: rgba(0,255,136,0.1);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 1200px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚔️ Combat de Boss - Composition d'Équipe ⚔️</h1>
+        
+        <div class="game-layout">
+            <div class="heroes-section">
+                <h2 class="section-title">🦸 Héros Disponibles</h2>
+                <div class="heroes-grid" id="heroesGrid">
+                    <!-- Les héros seront générés par JavaScript -->
+                </div>
+            </div>
+            
+            <div class="team-section">
+                <h2 class="section-title">👥 Votre Équipe (0/6)</h2>
+                <div class="team-slots" id="teamSlots">
+                    <!-- Les slots d'équipe seront générés par JavaScript -->
+                </div>
+                
+                <div class="synergy-info" id="synergyInfo" style="display: none;">
+                    <strong>💫 Synergies Actives:</strong>
+                    <div id="synergyList"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="combat-section">
+            <div class="boss-info">
+                <div class="boss-name">🐉 Dragon des Abysses</div>
+                <div class="boss-hp">PV: <span id="bossHp">1000000</span> / 1000000</div>
+                <div class="hp-bar">
+                    <div class="hp-fill" id="hpFill" style="width: 100%"></div>
+                </div>
+            </div>
+            
+            <button class="combat-btn" id="startCombat">🗡️ Commencer le Combat</button>
+            <button class="combat-btn" id="resetBoss" style="display: none;">🔄 Réinitialiser Boss</button>
+            
+            <div class="timer" id="timer" style="display: none;">⏱️ Temps: 60s</div>
+            <div class="damage-display" id="damageDisplay">Dégâts Total: 0</div>
+            
+            <div class="best-score">
+                <div class="score-title">🏆 Meilleur Score</div>
+                <div id="bestScore">0 dégâts</div>
+                <div id="bestTeam" style="margin-top: 10px; font-size: 0.9em; color: #ccc;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données des héros
+        const heroes = [
+            { name: "Aragorn", role: "Guerrier", attack: 150, speed: 80, crit: 15, special: "Rage" },
+            { name: "Legolas", role: "Archer", attack: 120, speed: 120, crit: 25, special: "Précision" },
+            { name: "Gandalf", role: "Mage", attack: 200, speed: 60, crit: 10, special: "Magie" },
+            { name: "Gimli", role: "Tank", attack: 100, speed: 50, crit: 20, special: "Défense" },
+            { name: "Boromir", role: "Guerrier", attack: 140, speed: 70, crit: 18, special: "Rage" },
+            { name: "Arwen", role: "Soigneur", attack: 80, speed: 90, crit: 12, special: "Soin" },
+            { name: "Éowyn", role: "Guerrier", attack: 130, speed: 85, crit: 22, special: "Rage" },
+            { name: "Faramir", role: "Archer", attack: 110, speed: 100, crit: 20, special: "Précision" },
+            { name: "Galadriel", role: "Mage", attack: 180, speed: 70, crit: 15, special: "Magie" },
+            { name: "Théoden", role: "Tank", attack: 90, speed: 45, crit: 10, special: "Défense" },
+            { name: "Saroumane", role: "Mage", attack: 220, speed: 55, crit: 8, special: "Magie" },
+            { name: "Denethor", role: "Soigneur", attack: 70, speed: 75, crit: 14, special: "Soin" },
+            { name: "Haldir", role: "Archer", attack: 125, speed: 110, crit: 28, special: "Précision" },
+            { name: "Elrond", role: "Soigneur", attack: 90, speed: 85, crit: 16, special: "Soin" },
+            { name: "Glóin", role: "Tank", attack: 110, speed: 55, crit: 25, special: "Défense" },
+            { name: "Bard", role: "Archer", attack: 115, speed: 95, crit: 30, special: "Précision" },
+            { name: "Thranduil", role: "Guerrier", attack: 135, speed: 90, crit: 20, special: "Rage" },
+            { name: "Radagast", role: "Mage", attack: 160, speed: 65, crit: 12, special: "Magie" },
+            { name: "Tauriel", role: "Archer", attack: 105, speed: 115, crit: 24, special: "Précision" },
+            { name: "Thorin", role: "Tank", attack: 120, speed: 60, crit: 18, special: "Défense" }
+        ];
+
+        // Variables du jeu
+        let selectedTeam = [];
+        let gameState = {
+            combat: false,
+            timeLeft: 60,
+            totalDamage: 0,
+            bossHp: 1000000,
+            maxBossHp: 1000000,
+            bestScore: 0,
+            bestTeam: []
+        };
+
+        // Synergies
+        const synergies = {
+            "Rage de Guerre": { roles: ["Guerrier"], minCount: 3, bonus: "ATK +20%" },
+            "Tir de Précision": { roles: ["Archer"], minCount: 2, bonus: "CRIT +10%" },
+            "Puissance Magique": { roles: ["Mage"], minCount: 2, bonus: "ATK +15%" },
+            "Mur de Boucliers": { roles: ["Tank"], minCount: 2, bonus: "Durabilité équipe +25%" },
+            "Soutien Divin": { roles: ["Soigneur"], minCount: 2, bonus: "Régénération +30%" },
+            "Équipe Équilibrée": { roles: ["Guerrier", "Archer", "Mage", "Tank", "Soigneur"], minCount: 5, bonus: "Tous stats +10%" }
+        };
+
+        // Initialisation
+        function init() {
+            renderHeroes();
+            renderTeamSlots();
+            loadBestScore();
+        }
+
+        function renderHeroes() {
+            const grid = document.getElementById('heroesGrid');
+            grid.innerHTML = '';
+            
+            heroes.forEach((hero, index) => {
+                const heroCard = document.createElement('div');
+                heroCard.className = 'hero-card';
+                heroCard.onclick = () => selectHero(index);
+                
+                if (selectedTeam.includes(index)) {
+                    heroCard.classList.add('selected');
+                }
+                
+                if (selectedTeam.length >= 6 && !selectedTeam.includes(index)) {
+                    heroCard.classList.add('disabled');
+                }
+                
+                heroCard.innerHTML = `
+                    <div class="hero-name">${hero.name}</div>
+                    <div class="hero-role">${getRoleIcon(hero.role)} ${hero.role}</div>
+                    <div class="hero-stats">
+                        <div class="stat-line">
+                            <span>⚔️ ATK:</span>
+                            <span>${hero.attack}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>⚡ VIT:</span>
+                            <span>${hero.speed}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>💥 CRIT:</span>
+                            <span>${hero.crit}%</span>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(heroCard);
+            });
+        }
+
+        function getRoleIcon(role) {
+            const icons = {
+                "Guerrier": "⚔️",
+                "Archer": "🏹",
+                "Mage": "🔮",
+                "Tank": "🛡️",
+                "Soigneur": "❤️"
+            };
+            return icons[role] || "❓";
+        }
+
+        function selectHero(heroIndex) {
+            if (gameState.combat) return;
+            
+            if (selectedTeam.includes(heroIndex)) {
+                selectedTeam = selectedTeam.filter(i => i !== heroIndex);
+            } else if (selectedTeam.length < 6) {
+                selectedTeam.push(heroIndex);
+            }
+            
+            updateTeamDisplay();
+            renderHeroes();
+            checkSynergies();
+        }
+
+        function renderTeamSlots() {
+            const slots = document.getElementById('teamSlots');
+            slots.innerHTML = '';
+            
+            for (let i = 0; i < 6; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'team-slot';
+                slot.id = `slot-${i}`;
+                slots.appendChild(slot);
+            }
+        }
+
+        function updateTeamDisplay() {
+            document.querySelector('.team-section h2').textContent = `👥 Votre Équipe (${selectedTeam.length}/6)`;
+            
+            for (let i = 0; i < 6; i++) {
+                const slot = document.getElementById(`slot-${i}`);
+                
+                if (i < selectedTeam.length) {
+                    const hero = heroes[selectedTeam[i]];
+                    slot.className = 'team-slot filled';
+                    slot.innerHTML = `
+                        <div class="slot-hero">${getRoleIcon(hero.role)} ${hero.name}</div>
+                        <div style="font-size: 0.8em; color: #ccc;">${hero.role}</div>
+                        <button class="remove-btn" onclick="removeFromTeam(${i})">Retirer</button>
+                    `;
+                } else {
+                    slot.className = 'team-slot empty';
+                    slot.innerHTML = '<div style="color: #666;">Slot vide</div>';
+                }
+            }
+        }
+
+        function removeFromTeam(slotIndex) {
+            if (gameState.combat) return;
+            selectedTeam.splice(slotIndex, 1);
+            updateTeamDisplay();
+            renderHeroes();
+            checkSynergies();
+        }
+
+        function checkSynergies() {
+            const activeSynergies = [];
+            const teamRoles = selectedTeam.map(i => heroes[i].role);
+            const roleCounts = {};
+            
+            teamRoles.forEach(role => {
+                roleCounts[role] = (roleCounts[role] || 0) + 1;
+            });
+            
+            Object.entries(synergies).forEach(([name, synergy]) => {
+                if (name === "Équipe Équilibrée") {
+                    const uniqueRoles = new Set(teamRoles);
+                    if (uniqueRoles.size >= synergy.minCount) {
+                        activeSynergies.push(`${name}: ${synergy.bonus}`);
+                    }
+                } else {
+                    synergy.roles.forEach(role => {
+                        if ((roleCounts[role] || 0) >= synergy.minCount) {
+                            activeSynergies.push(`${name}: ${synergy.bonus}`);
+                        }
+                    });
+                }
+            });
+            
+            const synergyInfo = document.getElementById('synergyInfo');
+            const synergyList = document.getElementById('synergyList');
+            
+            if (activeSynergies.length > 0) {
+                synergyInfo.style.display = 'block';
+                synergyList.innerHTML = activeSynergies.map(s => `<div>• ${s}</div>`).join('');
+            } else {
+                synergyInfo.style.display = 'none';
+            }
+        }
+
+        function startCombat() {
+            if (selectedTeam.length === 0) {
+                alert('Sélectionnez au moins un héros !');
+                return;
+            }
+            
+            gameState.combat = true;
+            gameState.timeLeft = 60;
+            gameState.totalDamage = 0;
+            
+            document.getElementById('startCombat').style.display = 'none';
+            document.getElementById('resetBoss').style.display = 'inline-block';
+            document.getElementById('timer').style.display = 'block';
+            
+            combatLoop();
+        }
+
+        function combatLoop() {
+            if (!gameState.combat || gameState.timeLeft <= 0) {
+                endCombat();
+                return;
+            }
+            
+            // Calculer les dégâts de l'équipe
+            let teamDamage = 0;
+            selectedTeam.forEach(heroIndex => {
+                const hero = heroes[heroIndex];
+                let damage = hero.attack;
+                
+                // Chance de critique
+                if (Math.random() * 100 < hero.crit) {
+                    damage *= 2;
+                }
+                
+                // Bonus de synergies (simulation)
+                if (selectedTeam.length >= 3) {
+                    damage *= 1.1; // Bonus d'équipe
+                }
+                
+                teamDamage += damage;
+            });
+            
+            // Appliquer les dégâts au boss
+            gameState.totalDamage += teamDamage;
+            gameState.bossHp = Math.max(0, gameState.bossHp - teamDamage);
+            
+            // Mettre à jour l'affichage
+            updateCombatDisplay();
+            showFloatingDamage(teamDamage);
+            
+            // Continuer le combat
+            gameState.timeLeft -= 1;
+            setTimeout(combatLoop, 1000);
+        }
+
+        function updateCombatDisplay() {
+            document.getElementById('timer').textContent = `⏱️ Temps: ${gameState.timeLeft}s`;
+            document.getElementById('damageDisplay').textContent = `Dégâts Total: ${gameState.totalDamage.toLocaleString()}`;
+            document.getElementById('bossHp').textContent = gameState.bossHp.toLocaleString();
+            
+            const hpPercentage = (gameState.bossHp / gameState.maxBossHp) * 100;
+            document.getElementById('hpFill').style.width = `${hpPercentage}%`;
+        }
+
+        function showFloatingDamage(damage) {
+            const bossInfo = document.querySelector('.boss-info');
+            const floatingDamage = document.createElement('div');
+            floatingDamage.className = 'floating-damage';
+            floatingDamage.textContent = `-${damage.toLocaleString()}`;
+            floatingDamage.style.left = `${Math.random() * 200 + 50}px`;
+            floatingDamage.style.top = '50px';
+            
+            bossInfo.style.position = 'relative';
+            bossInfo.appendChild(floatingDamage);
+            
+            setTimeout(() => {
+                floatingDamage.remove();
+            }, 1000);
+        }
+
+        function endCombat() {
+            gameState.combat = false;
+            
+            document.getElementById('timer').style.display = 'none';
+            document.getElementById('startCombat').style.display = 'inline-block';
+            
+            // Vérifier si c'est un nouveau record
+            if (gameState.totalDamage > gameState.bestScore) {
+                gameState.bestScore = gameState.totalDamage;
+                gameState.bestTeam = [...selectedTeam];
+                saveBestScore();
+                alert(`🎉 Nouveau record ! ${gameState.totalDamage.toLocaleString()} dégâts !`);
+            }
+            
+            updateBestScoreDisplay();
+        }
+
+        function resetBoss() {
+            gameState.bossHp = gameState.maxBossHp;
+            gameState.totalDamage = 0;
+            gameState.combat = false;
+            gameState.timeLeft = 60;
+            
+            document.getElementById('resetBoss').style.display = 'none';
+            document.getElementById('startCombat').style.display = 'inline-block';
+            document.getElementById('timer').style.display = 'none';
+            
+            updateCombatDisplay();
+        }
+
+        function updateBestScoreDisplay() {
+            document.getElementById('bestScore').textContent = `${gameState.bestScore.toLocaleString()} dégâts`;
+            
+            if (gameState.bestTeam.length > 0) {
+                const teamNames = gameState.bestTeam.map(i => heroes[i].name).join(', ');
+                document.getElementById('bestTeam').textContent = `Équipe: ${teamNames}`;
+            }
+        }
+
+        function saveBestScore() {
+            const saveData = {
+                bestScore: gameState.bestScore,
+                bestTeam: gameState.bestTeam
+            };
+            // Simuler la sauvegarde (dans un vrai jeu, on utiliserait une base de données)
+            console.log('Score sauvegardé:', saveData);
+        }
+
+        function loadBestScore() {
+            // Simuler le chargement (dans un vraijeu, on chargerait depuis une base de données)
+            updateBestScoreDisplay();
+        }
+
+        // Event listeners
+        document.getElementById('startCombat').addEventListener('click', startCombat);
+        document.getElementById('resetBoss').addEventListener('click', resetBoss);
+
+        // Initialiser le jeu
+        init();
+    </script>
+</body>
+</html>

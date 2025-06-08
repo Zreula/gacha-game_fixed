@@ -1,9 +1,0 @@
-# Fichiers système
-.DS_Store
-Thumbs.db
-
-# Vercel
-.vercel/
-
-# Log
-npm-debug.log*
