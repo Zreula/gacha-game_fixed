@@ -128,6 +128,12 @@ class WoWIdleGame {
                 this.uiManager.showNotification(result.reason, 'error');
             }
         };
+
+        // Méthode globale pour forcer la mise à jour de l'interface
+        window.refreshUI = () => {
+            this.uiManager.updateProfessionsUI();
+            this.uiManager.updateInventoryUI();
+        };
     }
 
     setupEventListeners() {
@@ -277,7 +283,8 @@ class WoWIdleGame {
 document.addEventListener('DOMContentLoaded', () => {
     window.game = new WoWIdleGame();
 });
-        this.uiManager.update(); {
+        this.uiManager.update();
+        {
 
         // Continuer la boucle
         requestAnimationFrame(() => this.gameLoop());
@@ -298,7 +305,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const minutes = Math.floor((offlineTime % 3600) / 60);
         
         // Créer une popup de rapport offline
-        const report = document.createElement('div'); {
+        const report = document.createElement('div'); 
+        {
         report.className = 'offline-report';
         report.innerHTML = `
             <div class="offline-report-content">

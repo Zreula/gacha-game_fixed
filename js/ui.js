@@ -90,7 +90,7 @@ export class UIManager {
             
             <div class="resource-selection">
                 <label>Ressource actuelle:</label>
-                <select onchange="window.game.professionManager.switchResource('${profName}', this.value)">
+                <select onchange="window.game.professionManager.switchResource('${profName}', this.value); window.game.uiManager.updateProfessionsUI();">
                     ${this.createResourceOptions(profName, profData)}
                 </select>
             </div>
@@ -145,14 +145,19 @@ export class UIManager {
                 } else {
                     this.professionManager.startGathering(profName);
                 }
-                this.updateProfessionsUI();
+                // Forcer la mise à jour immédiate de l'interface
+                setTimeout(() => {
+                    this.updateProfessionsUI();
+                }, 50);
             });
         }
         
         if (upgradeBtn) {
             upgradeBtn.addEventListener('click', () => {
                 if (this.professionManager.upgradeEfficiency(profName)) {
-                    this.updateProfessionsUI();
+                    setTimeout(() => {
+                        this.updateProfessionsUI();
+                    }, 50);
                     this.showNotification(`Efficacité de ${this.getProfessionDisplayName(profName)} améliorée !`);
                 } else {
                     this.showNotification('Pas assez d\'or !', 'error');
@@ -332,17 +337,33 @@ export class UIManager {
         
         gatheringProfs.forEach(profName => {
             const profData = this.gameState.professions[profName];
-            if (profData.isActive) {
-                // Trouver l'élément de progression et le mettre à jour
-                const progressElement = document.querySelector(`.profession .gathering-progress .progress-fill`);
-                if (progressElement && profData.gatheringProgress) {
-                    const resourceData = this.getResourceData(profName, profData);
-                    if (resourceData) {
-                        const actualTime = resourceData.baseTime / profData.efficiency;
-                        const progress = (profData.gatheringProgress / actualTime) * 100;
-                        progressElement.style.width = `${Math.min(progress, 100)}%`;
+            if (profData.isActive && profData.gatheringProgress !== undefined) {
+                // Trouver l'élément de progression spécifique à ce métier
+                const professionElements = document.querySelectorAll('.profession.gathering');
+                
+                professionElements.forEach(element => {
+                    const professionTitle = element.querySelector('h3').textContent;
+                    const expectedTitle = this.getProfessionDisplayName(profName);
+                    
+                    if (professionTitle === expectedTitle) {
+                        const progressElement = element.querySelector('.gathering-progress .progress-fill');
+                        if (progressElement) {
+                            const resourceData = this.getResourceData(profName, profData);
+                            if (resourceData) {
+                                const actualTime = resourceData.baseTime / profData.efficiency;
+                                const progress = (profData.gatheringProgress / actualTime) * 100;
+                                progressElement.style.width = `${Math.min(progress, 100)}%`;
+                                
+                                // Mettre à jour le texte du temps restant
+                                const timeText = element.querySelector('.gathering-progress small');
+                                if (timeText) {
+                                    const timeRemaining = Math.max(0, actualTime - profData.gatheringProgress);
+                                    timeText.textContent = `Récolte en cours... (${timeRemaining.toFixed(1)}s restant)`;
+                                }
+                            }
+                        }
                     }
-                }
+                });
             }
         });
     }
