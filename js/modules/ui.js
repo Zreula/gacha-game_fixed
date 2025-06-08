@@ -363,21 +363,28 @@ const UI = {
         
         if (!characterName || !slotType) return;
         
-        // Déséquiper l'objet actuel s'il y en a un
+        // Vérifier si on équipe le même objet (pas besoin de rien faire)
         const currentEquipment = gameState.characterEquipment[characterName];
+        if (currentEquipment && currentEquipment[slotType] === item.id) {
+            this.showNotification(`ℹ️ ${item.name} est déjà équipé sur ${characterName}`, 'info');
+            this.closeInventoryModal();
+            return;
+        }
+        
+        // Déséquiper l'objet actuel s'il y en a un ET que c'est différent
         if (currentEquipment && currentEquipment[slotType]) {
             const currentItemId = currentEquipment[slotType];
             const currentItem = EquipmentSystem.getEquipmentById(currentItemId);
             
-            if (currentItem) {
-                // Remettre l'objet actuel dans l'inventaire
+            if (currentItem && currentItemId !== item.id) {
+                // Remettre SEULEMENT si c'est un objet différent
                 this.addItemToInventory(currentItem);
             }
         }
         
         // Équiper le nouvel objet
         if (EquipmentSystem.equipItem(characterName, item.id, slotType)) {
-            // ✅ IMPORTANT : Supprimer l'objet de l'inventaire (consommation)
+            // Supprimer l'objet de l'inventaire
             gameState.inventory.splice(inventoryIndex, 1);
             
             // Fermer la modal et mettre à jour
