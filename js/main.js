@@ -32,6 +32,12 @@ class WoWIdleGame {
         // Charger la sauvegarde
         this.saveManager.loadGame();
         
+        // Vérifier que tous les managers sont initialisés
+        if (!this.uiManager) {
+            console.error('UIManager non initialisé !');
+            return;
+        }
+        
         // Initialiser l'interface
         this.uiManager.init();
         this.setupEventListeners();
@@ -44,6 +50,8 @@ class WoWIdleGame {
         setInterval(() => {
             this.saveManager.saveGame();
         }, 30000);
+        
+        console.log('Jeu initialisé avec succès !');
     }
 
     setupGlobalMethods() {
@@ -153,7 +161,18 @@ class WoWIdleGame {
                 setTimeout(() => {
                     this.uiManager.updateProfessionsUI();
                 }, 50);
-                this.uiManager.showNotification(`Efficacité de ${this.uiManager.getProfessionDisplayName(profName)} améliorée !`);
+                // Utiliser un mapping local au lieu de this.uiManager.getProfessionDisplayName
+                const professionNames = {
+                    mining: 'Minage',
+                    herbalism: 'Herboristerie',
+                    skinning: 'Dépeçage',
+                    blacksmithing: 'Forge',
+                    alchemy: 'Alchimie',
+                    tailoring: 'Couture',
+                    engineering: 'Ingénierie'
+                };
+                const displayName = professionNames[profName] || profName;
+                this.uiManager.showNotification(`Efficacité de ${displayName} améliorée !`);
             } else {
                 this.uiManager.showNotification('Pas assez d\'or !', 'error');
             }
@@ -222,7 +241,6 @@ class WoWIdleGame {
         this.questManager.update(deltaTime);
         this.auctionHouse.update(deltaTime);
     }
-
     gameLoop() {
         const now = Date.now();
         const deltaTime = (now - this.lastUpdate) / 1000;
@@ -268,6 +286,8 @@ class WoWIdleGame {
             z-index: 2000;
         `;
         
+        const offlineGainsHTML = this.formatOfflineGains();
+        
         report.innerHTML = `
             <div class="offline-report-content" style="
                 background: linear-gradient(135deg, #1a1a2e, #16213e);
@@ -281,7 +301,7 @@ class WoWIdleGame {
                 <h3 style="color: #ffd700; margin-bottom: 1rem;">Rapport Offline</h3>
                 <p>Vous étiez absent pendant ${hours}h ${minutes}m</p>
                 <div class="offline-gains" style="margin: 1rem 0;">
-                    ${this.formatOfflineGains()}
+                    ${offlineGainsHTML}
                 </div>
                 <button class="btn" onclick="this.parentElement.parentElement.remove()" style="
                     background: #4CAF50;
@@ -325,17 +345,19 @@ document.addEventListener('DOMContentLoaded', () => {
     window.game = new WoWIdleGame();
 });
         this.uiManager.update();
+
         // Continuer la boucle
         requestAnimationFrame(() => this.gameLoop());
+    
 
-    handleOfflineProgress() 
-    {
+    handleOfflineProgress()     
+        {
         const offlineTime = this.saveManager.getOfflineTime();
-        if (offlineTime > 60) { // Plus d'une minute offline
-            this.professionManager.processOfflineGains(offlineTime);
-            this.showOfflineReport(offlineTime);
+            if (offlineTime > 60) { // Plus d'une minute offline
+                this.professionManager.processOfflineGains(offlineTime);
+                this.showOfflineReport(offlineTime);
+            }
         }
-    }
 
     showOfflineReport(offlineTime) 
     {
