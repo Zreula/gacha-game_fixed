@@ -362,26 +362,20 @@ equipFromInventory(item, inventoryIndex) {
     
     if (!characterName || !slotType) return;
     
-    // Récupérer l'équipement actuel
+    // Déséquiper l'ancien objet s'il existe
     const currentEquipment = gameState.characterEquipment[characterName];
-    const currentItemId = currentEquipment ? currentEquipment[slotType] : null;
-    
-    console.log('🔥 Équipement actuel:', currentItemId, 'Nouvel item:', item.id);
-    
-    // Déséquiper l'ancien objet s'il existe (peu importe lequel)
-    if (currentItemId) {
+    if (currentEquipment && currentEquipment[slotType]) {
+        const currentItemId = currentEquipment[slotType];
         const currentItem = EquipmentSystem.getEquipmentById(currentItemId);
+        
         if (currentItem) {
-            // Toujours déséquiper et remettre dans l'inventaire
             EquipmentSystem.unequipItem(characterName, slotType);
             this.addItemToInventory(currentItem);
-            console.log('🔥 Ancien objet déséquipé et remis dans inventaire');
         }
     }
     
     // Équiper le nouvel objet
     if (EquipmentSystem.equipItem(characterName, item.id, slotType)) {
-        // Supprimer l'objet de l'inventaire
         gameState.inventory.splice(inventoryIndex, 1);
         
         this.closeInventoryModal();
