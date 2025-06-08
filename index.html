@@ -368,14 +368,15 @@
                 
                 <div class="filters-section">
                     <div class="filter-group">
-                        <label>Filter by Role:</label>
+                        <label>Filter by Class:</label>
                         <select id="roleFilter">
-                            <option value="all">All Roles</option>
+                            <option value="all">All Classes</option>
                             <option value="Warrior">⚔️ Warriors</option>
-                            <option value="Archer">🏹 Archers</option>
+                            <option value="Hunter">🏹 Hunters</option>
                             <option value="Mage">🔮 Mages</option>
-                            <option value="Tank">🛡️ Tanks</option>
-                            <option value="Healer">❤️ Healers</option>
+                            <option value="Warlock">🔥 Warlocks</option>
+                            <option value="Paladin">🛡️ Paladins</option>
+                            <option value="Priest">✨ Priests</option>
                         </select>
                     </div>
                     
@@ -439,26 +440,26 @@
     <script>
         // Hero data
         const heroes = [
-            { name: "Aragorn", role: "Warrior", attack: 150, speed: 80, crit: 15, special: "Rage" },
-            { name: "Legolas", role: "Archer", attack: 120, speed: 120, crit: 25, special: "Precision" },
-            { name: "Gandalf", role: "Mage", attack: 200, speed: 60, crit: 10, special: "Magic" },
-            { name: "Gimli", role: "Tank", attack: 100, speed: 50, crit: 20, special: "Defense" },
-            { name: "Boromir", role: "Warrior", attack: 140, speed: 70, crit: 18, special: "Rage" },
-            { name: "Arwen", role: "Healer", attack: 80, speed: 90, crit: 12, special: "Heal" },
-            { name: "Éowyn", role: "Warrior", attack: 130, speed: 85, crit: 22, special: "Rage" },
-            { name: "Faramir", role: "Archer", attack: 110, speed: 100, crit: 20, special: "Precision" },
-            { name: "Galadriel", role: "Mage", attack: 180, speed: 70, crit: 15, special: "Magic" },
-            { name: "Théoden", role: "Tank", attack: 90, speed: 45, crit: 10, special: "Defense" },
-            { name: "Saruman", role: "Mage", attack: 220, speed: 55, crit: 8, special: "Magic" },
-            { name: "Denethor", role: "Healer", attack: 70, speed: 75, crit: 14, special: "Heal" },
-            { name: "Haldir", role: "Archer", attack: 125, speed: 110, crit: 28, special: "Precision" },
-            { name: "Elrond", role: "Healer", attack: 90, speed: 85, crit: 16, special: "Heal" },
-            { name: "Glóin", role: "Tank", attack: 110, speed: 55, crit: 25, special: "Defense" },
-            { name: "Bard", role: "Archer", attack: 115, speed: 95, crit: 30, special: "Precision" },
-            { name: "Thranduil", role: "Warrior", attack: 135, speed: 90, crit: 20, special: "Rage" },
-            { name: "Radagast", role: "Mage", attack: 160, speed: 65, crit: 12, special: "Magic" },
-            { name: "Tauriel", role: "Archer", attack: 105, speed: 115, crit: 24, special: "Precision" },
-            { name: "Thorin", role: "Tank", attack: 120, speed: 60, crit: 18, special: "Defense" }
+            { name: "Thorak Ironbane", role: "Warrior", attack: 150, speed: 80, crit: 15, special: "Berserker Rage" },
+            { name: "Sylvanna Swiftarrow", role: "Hunter", attack: 120, speed: 120, crit: 25, special: "Beast Mastery" },
+            { name: "Zephyros the Arcane", role: "Mage", attack: 200, speed: 60, crit: 10, special: "Arcane Blast" },
+            { name: "Grimshield Stonebeard", role: "Paladin", attack: 100, speed: 50, crit: 20, special: "Divine Shield" },
+            { name: "Varok Bloodfury", role: "Warrior", attack: 140, speed: 70, crit: 18, special: "Berserker Rage" },
+            { name: "Lythara Moonwhisper", role: "Priest", attack: 80, speed: 90, crit: 12, special: "Divine Healing" },
+            { name: "Kaelen Stormstrike", role: "Warrior", attack: 130, speed: 85, crit: 22, special: "Berserker Rage" },
+            { name: "Velara Nightshot", role: "Hunter", attack: 110, speed: 100, crit: 20, special: "Beast Mastery" },
+            { name: "Nethys Voidcaller", role: "Warlock", attack: 180, speed: 70, crit: 15, special: "Shadow Magic" },
+            { name: "Thorgrim Shieldwall", role: "Paladin", attack: 90, speed: 45, crit: 10, special: "Divine Shield" },
+            { name: "Malachar Soulreaper", role: "Warlock", attack: 220, speed: 55, crit: 8, special: "Shadow Magic" },
+            { name: "Aerion Lightbringer", role: "Priest", attack: 70, speed: 75, crit: 14, special: "Divine Healing" },
+            { name: "Kythara Rapidfire", role: "Hunter", attack: 125, speed: 110, crit: 28, special: "Beast Mastery" },
+            { name: "Valdris Dawnbreaker", role: "Priest", attack: 90, speed: 85, crit: 16, special: "Divine Healing" },
+            { name: "Borin Forgehammer", role: "Paladin", attack: 110, speed: 55, crit: 25, special: "Divine Shield" },
+            { name: "Thyssa Shadowbolt", role: "Hunter", attack: 115, speed: 95, crit: 30, special: "Beast Mastery" },
+            { name: "Drakthar Bloodaxe", role: "Warrior", attack: 135, speed: 90, crit: 20, special: "Berserker Rage" },
+            { name: "Mystral Frostweaver", role: "Mage", attack: 160, speed: 65, crit: 12, special: "Arcane Blast" },
+            { name: "Nyssa Wildshot", role: "Hunter", attack: 105, speed: 115, crit: 24, special: "Beast Mastery" },
+            { name: "Gorath Ironwall", role: "Paladin", attack: 120, speed: 60, crit: 18, special: "Divine Shield" }
         ];
 
         // Game variables
@@ -476,12 +477,13 @@
 
         // Synergies
         const synergies = {
-            "War Rage": { roles: ["Warrior"], minCount: 3, bonus: "ATK +20%" },
-            "Precision Shot": { roles: ["Archer"], minCount: 2, bonus: "CRIT +10%" },
-            "Arcane Power": { roles: ["Mage"], minCount: 2, bonus: "ATK +15%" },
-            "Shield Wall": { roles: ["Tank"], minCount: 2, bonus: "Team Durability +25%" },
-            "Divine Support": { roles: ["Healer"], minCount: 2, bonus: "Regeneration +30%" },
-            "Balanced Team": { roles: ["Warrior", "Archer", "Mage", "Tank", "Healer"], minCount: 5, bonus: "All Stats +10%" }
+            "Warrior's Might": { roles: ["Warrior"], minCount: 3, bonus: "ATK +20%" },
+            "Hunter's Mark": { roles: ["Hunter"], minCount: 2, bonus: "CRIT +10%" },
+            "Arcane Mastery": { roles: ["Mage"], minCount: 2, bonus: "ATK +15%" },
+            "Shadow Pact": { roles: ["Warlock"], minCount: 2, bonus: "ATK +18%" },
+            "Divine Protection": { roles: ["Paladin"], minCount: 2, bonus: "Team Durability +25%" },
+            "Holy Light": { roles: ["Priest"], minCount: 2, bonus: "Regeneration +30%" },
+            "Balanced Party": { roles: ["Warrior", "Hunter", "Mage", "Warlock", "Paladin", "Priest"], minCount: 5, bonus: "All Stats +10%" }
         };
 
         // Initialization
@@ -592,10 +594,11 @@
         function getRoleIcon(role) {
             const icons = {
                 "Warrior": "⚔️",
-                "Archer": "🏹",
+                "Hunter": "🏹",
                 "Mage": "🔮",
-                "Tank": "🛡️",
-                "Healer": "❤️"
+                "Warlock": "🔥",
+                "Paladin": "🛡️",
+                "Priest": "✨"
             };
             return icons[role] || "❓";
         }
@@ -665,7 +668,7 @@
             });
             
             Object.entries(synergies).forEach(([name, synergy]) => {
-                if (name === "Balanced Team") {
+                if (name === "Balanced Party") {
                     const uniqueRoles = new Set(teamRoles);
                     if (uniqueRoles.size >= synergy.minCount) {
                         activeSynergies.push(`${name}: ${synergy.bonus}`);
