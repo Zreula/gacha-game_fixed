@@ -365,6 +365,7 @@ equipFromInventory(item, inventoryIndex) {
     if (!characterName || !slotType) return;
     
     console.log(`🔧 Inventaire AVANT: ${gameState.inventory.length}`);
+    console.log(`🐛 DEBUG - currentEquippedId: "${currentEquippedId}", item.id: "${item.id}"`);
     
     // VÉRIFICATION IMPORTANTE: Si l'objet est déjà équipé sur ce personnage, ne rien faire
     const currentEquipment = gameState.characterEquipment[characterName];
