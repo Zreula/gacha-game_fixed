@@ -131,11 +131,11 @@ export class UIManager {
             
             <div class="profession-actions">
                 <button class="btn ${isActive ? 'btn-stop' : 'btn-start'}" 
-                        onclick="this.toggleGathering('${profName}')">
+                        onclick="toggleGathering('${profName}')">
                     ${isActive ? 'Arrêter' : 'Commencer'}
                 </button>
                 <button class="btn btn-upgrade" 
-                        onclick="this.upgradeEfficiency('${profName}')"
+                        onclick="upgradeEfficiency('${profName}')"
                         title="Coût: ${this.professionManager ? this.professionManager.getEfficiencyUpgradeCost(profName) : 0} or">
                     Améliorer (+0.1x)
                 </button>
@@ -174,36 +174,8 @@ export class UIManager {
     }
 
     setupGatheringEventListeners(element, profName) {
-        const toggleBtn = element.querySelector('.btn-start, .btn-stop');
-        const upgradeBtn = element.querySelector('.btn-upgrade');
-        
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => {
-                const isActive = this.gameState.professions[profName].isActive;
-                if (isActive) {
-                    this.professionManager.stopGathering(profName);
-                } else {
-                    this.professionManager.startGathering(profName);
-                }
-                // Forcer la mise à jour immédiate de l'interface
-                setTimeout(() => {
-                    this.updateProfessionsUI();
-                }, 50);
-            });
-        }
-        
-        if (upgradeBtn) {
-            upgradeBtn.addEventListener('click', () => {
-                if (this.professionManager.upgradeEfficiency(profName)) {
-                    setTimeout(() => {
-                        this.updateProfessionsUI();
-                    }, 50);
-                    this.showNotification(`Efficacité de ${this.getProfessionDisplayName(profName)} améliorée !`);
-                } else {
-                    this.showNotification('Pas assez d\'or !', 'error');
-                }
-            });
-        }
+        // Les event listeners sont maintenant gérés via les fonctions globales onclick
+        // Plus besoin d'ajouter des listeners supplémentaires
     }
 
     updateCraftingProfessions() {
@@ -418,12 +390,32 @@ export class UIManager {
             const resourceAmount = item.querySelector('.resource-amount');
             
             if (resourceName && resourceAmount) {
-                const resourceKey = this.getResourceKeyFromDisplay(resourceName.textContent, profName);
+                const resourceKey = this.getResourceKeyFromName(resourceName.textContent, profName);
                 if (resourceKey && this.gameState.inventory.resources[resourceKey] !== undefined) {
                     resourceAmount.textContent = this.gameState.inventory.resources[resourceKey];
                 }
             }
         });
+    }
+
+    getResourceKeyFromName(displayName, profName) {
+        // Trouver la clé correspondante en comparant avec les définitions d'objets
+        const resourceMappings = {
+            mining: ['copper_ore', 'tin_ore', 'iron_ore', 'mithril_ore', 'coal'],
+            herbalism: ['peacebloom', 'silverleaf', 'earthroot', 'mageroyal'],
+            skinning: ['light_leather', 'medium_leather', 'heavy_leather', 'linen_cloth']
+        };
+        
+        const relevantResources = resourceMappings[profName] || [];
+        
+        for (const resourceKey of relevantResources) {
+            const itemInfo = this.inventoryManager.getItemInfo(resourceKey);
+            if (itemInfo && itemInfo.name === displayName.trim()) {
+                return resourceKey;
+            }
+        }
+        
+        return null;
     }
 
     createResourceList(profName) {

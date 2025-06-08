@@ -134,6 +134,30 @@ class WoWIdleGame {
             this.uiManager.updateProfessionsUI();
             this.uiManager.updateInventoryUI();
         };
+
+        // Méthodes pour les métiers
+        window.toggleGathering = (profName) => {
+            const isActive = this.gameState.professions[profName].isActive;
+            if (isActive) {
+                this.professionManager.stopGathering(profName);
+            } else {
+                this.professionManager.startGathering(profName);
+            }
+            setTimeout(() => {
+                this.uiManager.updateProfessionsUI();
+            }, 50);
+        };
+
+        window.upgradeEfficiency = (profName) => {
+            if (this.professionManager.upgradeEfficiency(profName)) {
+                setTimeout(() => {
+                    this.uiManager.updateProfessionsUI();
+                }, 50);
+                this.uiManager.showNotification(`Efficacité de ${this.uiManager.getProfessionDisplayName(profName)} améliorée !`);
+            } else {
+                this.uiManager.showNotification('Pas assez d\'or !', 'error');
+            }
+        };
     }
 
     setupEventListeners() {
@@ -186,6 +210,17 @@ class WoWIdleGame {
                 this.uiManager.updateQuestsUI();
                 break;
         }
+    }
+
+    gameLoop() {
+        const now = Date.now();
+        const deltaTime = (now - this.lastUpdate) / 1000;
+        this.lastUpdate = now;
+
+        // Mettre à jour les systèmes
+        this.professionManager.update(deltaTime);
+        this.questManager.update(deltaTime);
+        this.auctionHouse.update(deltaTime);
     }
 
     gameLoop() {
@@ -305,8 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const minutes = Math.floor((offlineTime % 3600) / 60);
         
         // Créer une popup de rapport offline
-        const report = document.createElement('div'); 
-        {
+        const report = document.createElement('div');
         report.className = 'offline-report';
         report.innerHTML = `
             <div class="offline-report-content">
@@ -321,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         document.body.appendChild(report);
     }
-}
+
 
 // Démarrer le jeu quand la page est chargée
 document.addEventListener('DOMContentLoaded', () => {
