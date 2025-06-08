@@ -1,0 +1,229 @@
+.profession-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.profession {
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.profession:hover {
+    border-color: #ffd700;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.profession::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #ffd700, transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.profession:hover::before {
+    opacity: 1;
+}
+
+.profession-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.profession h3 {
+    color: #4CAF50;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.profession-icon {
+    width: 32px;
+    height: 32px;
+    background: radial-gradient(circle, #ffd700, #ffb300);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #000;
+    flex-shrink: 0;
+}
+
+.skill-level {
+    color: #90CAF9;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.skill-xp {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.profession-status {
+    margin-bottom: 1rem;
+}
+
+.gathering-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #666;
+}
+
+.status-indicator.active {
+    background: #4CAF50;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.resource-list {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.resource-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.3rem 0;
+    padding: 0.3rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+}
+
+.resource-name {
+    color: #E0E0E0;
+}
+
+.resource-amount {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.resource-rate {
+    color: #90CAF9;
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+}
+
+.profession-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.craft-interface {
+    margin-top: 1rem;
+}
+
+.recipe-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.recipe {
+    background: rgba(255,255,255,0.05);
+    border-radius: 5px;
+    padding: 0.8rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+.recipe:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: #ffd700;
+}
+
+.recipe-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.recipe-name {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.recipe-level {
+    color: #90CAF9;
+    font-size: 0.8rem;
+}
+
+.recipe-materials {
+    font-size: 0.8rem;
+    color: #ccc;
+    margin-bottom: 0.5rem;
+}
+
+.material {
+    display: inline-block;
+    margin-right: 1rem;
+}
+
+.material.insufficient {
+    color: #f44336;
+}
+
+.recipe-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.craft-amount {
+    width: 60px;
+    padding: 0.3rem;
+    border: 1px solid #666;
+    border-radius: 3px;
+    background: rgba(0,0,0,0.3);
+    color: white;
+    font-size: 0.9rem;
+}
+
+.efficiency-bonus {
+    color: #4CAF50;
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+}
+
+.profession.gathering .profession-icon {
+    background: radial-gradient(circle, #8BC34A, #4CAF50);
+}
+
+.profession.crafting .profession-icon {
+    background: radial-gradient(circle, #FF9800, #F57C00);
+}

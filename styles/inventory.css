@@ -1,0 +1,209 @@
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.inventory-item {
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.inventory-item:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: #ffd700;
+    transform: translateY(-2px);
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+}
+
+.item-name {
+    font-weight: bold;
+    color: #E0E0E0;
+}
+
+.item-name.common { color: #9d9d9d; }
+.item-name.uncommon { color: #1eff00; }
+.item-name.rare { color: #0070dd; }
+.item-name.epic { color: #a335ee; }
+.item-name.legendary { color: #ff8000; }
+
+.item-icon {
+    width: 24px;
+    height: 24px;
+    background: #666;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.item-quantity {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #4CAF50;
+    text-align: right;
+}
+
+.item-info {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 0.5rem;
+}
+
+.item-value {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.item-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.sell-interface, .buy-interface {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.auction-item {
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.auction-info {
+    flex: 1;
+}
+
+.auction-item-name {
+    font-weight: bold;
+    color: #E0E0E0;
+    margin-bottom: 0.25rem;
+}
+
+.auction-price {
+    color: #ffd700;
+    font-size: 0.9rem;
+}
+
+.auction-quantity {
+    color: #90CAF9;
+    font-size: 0.8rem;
+}
+
+.auction-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.price-input {
+    width: 80px;
+    padding: 0.3rem;
+    border: 1px solid #666;
+    border-radius: 3px;
+    background: rgba(0,0,0,0.3);
+    color: white;
+    font-size: 0.9rem;
+}
+
+.quick-sell {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.quick-sell-btn {
+    background: linear-gradient(145deg, #FF9800, #F57C00);
+    border: none;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.quick-sell-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.market-trends {
+    background: rgba(255,255,255,0.05);
+    border-radius: 5px;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.trend-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.3rem 0;
+    font-size: 0.9rem;
+}
+
+.trend-up {
+    color: #4CAF50;
+}
+
+.trend-down {
+    color: #f44336;
+}
+
+.trend-stable {
+    color: #90CAF9;
+}
+
+.filter-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-select, .filter-input {
+    padding: 0.5rem;
+    border: 1px solid #666;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.3);
+    color: white;
+    font-size: 0.9rem;
+}
+
+.stack-info {
+    font-size: 0.7rem;
+    color: #666;
+    margin-top: 0.3rem;
+}
+
+.total-value {
+    background: rgba(255,215,0,0.1);
+    border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 5px;
+    padding: 0.8rem;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.total-value-amount {
+    color: #ffd700;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
