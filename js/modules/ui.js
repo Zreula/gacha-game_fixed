@@ -372,16 +372,6 @@ const UI = {
         
         if (!characterName || !slotType) return;
         
-        // VÉRIFIER SI L'OBJET EST DÉJÀ ÉQUIPÉ SUR UN AUTRE PERSONNAGE
-        const alreadyEquippedOn = this.findCharacterWithEquipment(item.id);
-        if (alreadyEquippedOn && alreadyEquippedOn !== characterName) {
-            this.showNotification(
-                `❌ ${item.name} est déjà équipé sur ${alreadyEquippedOn} !\nDéséquipez-le d'abord ou trouvez un autre exemplaire.`, 
-                'error'
-            );
-            return;
-        }
-
         // Déséquiper l'objet actuel s'il y en a un
         const currentEquipment = gameState.characterEquipment[characterName];
         if (currentEquipment && currentEquipment[slotType]) {
@@ -396,19 +386,15 @@ const UI = {
         
         // Équiper le nouvel objet
         if (EquipmentSystem.equipItem(characterName, item.id, slotType)) {
-            // Supprimer l'objet de l'inventaire
+            // ✅ IMPORTANT : Supprimer l'objet de l'inventaire (consommation)
             gameState.inventory.splice(inventoryIndex, 1);
             
-            // Fermer la modal
+            // Fermer la modal et mettre à jour
             this.closeInventoryModal();
-            
-            // Mettre à jour l'affichage
             this.updateEquipmentTab();
             
-            // Notification
             this.showNotification(`✅ ${item.name} équipé sur ${characterName} !`, 'success');
             
-            // Sauvegarder
             if (typeof SaveSystem !== 'undefined' && SaveSystem.autoSave) {
                 SaveSystem.autoSave();
             }
@@ -437,25 +423,20 @@ const UI = {
         const currentItem = EquipmentSystem.getEquipmentById(currentItemId);
         
         if (currentItem && EquipmentSystem.unequipItem(characterName, slotType)) {
-            // Remettre l'objet dans l'inventaire
+            // ✅ IMPORTANT : Remettre l'objet dans l'inventaire
             this.addItemToInventory(currentItem);
             
-            // Fermer la modal
             this.closeInventoryModal();
-            
-            // Mettre à jour l'affichage
             this.updateEquipmentTab();
             
-            // Notification
             this.showNotification(`🗑️ ${currentItem.name} déséquipé de ${characterName}`, 'success');
             
-            // Sauvegarder
             if (typeof SaveSystem !== 'undefined' && SaveSystem.autoSave) {
                 SaveSystem.autoSave();
             }
         }
     },
-
+    
     // Ajouter un objet à l'inventaire
     addItemToInventory(item) {
         if (!gameState.inventory) {
