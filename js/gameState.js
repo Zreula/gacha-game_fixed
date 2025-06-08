@@ -16,7 +16,8 @@ export class GameState {
                 isActive: false,
                 efficiency: 1.0,
                 currentNode: 'copper',
-                unlockedNodes: ['copper']
+                unlockedNodes: ['copper'],
+                gatheringProgress: 0
             },
             herbalism: {
                 level: 1,
@@ -25,7 +26,8 @@ export class GameState {
                 isActive: false,
                 efficiency: 1.0,
                 currentHerb: 'peacebloom',
-                unlockedHerbs: ['peacebloom']
+                unlockedHerbs: ['peacebloom'],
+                gatheringProgress: 0
             },
             skinning: {
                 level: 1,
@@ -34,7 +36,8 @@ export class GameState {
                 isActive: false,
                 efficiency: 1.0,
                 currentAnimal: 'rabbit',
-                unlockedAnimals: ['rabbit']
+                unlockedAnimals: ['rabbit'],
+                gatheringProgress: 0
             },
             
             // Métiers de production

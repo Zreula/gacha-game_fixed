@@ -349,12 +349,12 @@ export class UIManager {
         
         gatheringProfs.forEach(profName => {
             const profData = this.gameState.professions[profName];
-            if (profData.isActive && profData.gatheringProgress !== undefined) {
+            if (profData.isActive) {
                 // Trouver l'élément de progression spécifique à ce métier
                 const professionElements = document.querySelectorAll('.profession.gathering');
                 
                 professionElements.forEach(element => {
-                    const professionTitle = element.querySelector('h3').textContent;
+                    const professionTitle = element.querySelector('h3')?.textContent;
                     const expectedTitle = this.getProfessionDisplayName(profName);
                     
                     if (professionTitle === expectedTitle) {
@@ -365,8 +365,9 @@ export class UIManager {
                             const resourceData = this.getResourceData(profName, profData);
                             if (resourceData) {
                                 const actualTime = resourceData.baseTime / profData.efficiency;
-                                const progress = Math.min((profData.gatheringProgress / actualTime) * 100, 100);
-                                const timeRemaining = Math.max(0, actualTime - profData.gatheringProgress);
+                                const currentProgress = profData.gatheringProgress || 0;
+                                const progress = Math.min((currentProgress / actualTime) * 100, 100);
+                                const timeRemaining = Math.max(0, actualTime - currentProgress);
                                 
                                 progressElement.style.width = `${progress}%`;
                                 timeText.textContent = `Récolte en cours... (${timeRemaining.toFixed(1)}s restant)`;

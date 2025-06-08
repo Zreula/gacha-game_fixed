@@ -304,9 +304,15 @@ class WoWIdleGame {
             return '<p>Aucun gain offline</p>';
         }
 
+        const professionNames = {
+            mining: 'Minage',
+            herbalism: 'Herboristerie', 
+            skinning: 'Dépeçage'
+        };
+
         return gains.map(gain => `
             <div style="margin: 0.5rem 0; padding: 0.5rem; background: rgba(255,255,255,0.1); border-radius: 5px;">
-                <strong>${this.uiManager.getProfessionDisplayName(gain.profession)}</strong><br>
+                <strong>${professionNames[gain.profession] || gain.profession}</strong><br>
                 +${gain.resources} ${gain.resourceType}<br>
                 +${gain.xp} XP
             </div>
@@ -319,8 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.game = new WoWIdleGame();
 });
         this.uiManager.update();
-        {
-
+    {
         // Continuer la boucle
         requestAnimationFrame(() => this.gameLoop());
     }

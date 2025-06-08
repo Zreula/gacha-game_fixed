@@ -116,7 +116,8 @@ export class ProfessionManager {
         const profData = this.gameState.professions[profession];
         const gatheringInfo = this.gatheringData[profession];
         
-        if (!profData.gatheringProgress) {
+        // Initialiser la progression si nécessaire
+        if (profData.gatheringProgress === undefined) {
             profData.gatheringProgress = 0;
         }
 
@@ -140,12 +141,20 @@ export class ProfessionManager {
         const baseTime = resourceData.baseTime;
         const actualTime = baseTime / profData.efficiency;
 
+        // Incrémenter la progression
         profData.gatheringProgress += deltaTime;
 
-        // Compléter la récolte
+        // Compléter la récolte si le temps est écoulé
         if (profData.gatheringProgress >= actualTime) {
-            profData.gatheringProgress = 0;
-            this.completeGathering(profession, resourceData);
+            // Calculer combien de récoltes complètes on peut faire
+            const completedGatherings = Math.floor(profData.gatheringProgress / actualTime);
+            
+            for (let i = 0; i < completedGatherings; i++) {
+                this.completeGathering(profession, resourceData);
+            }
+            
+            // Garder le reste de progression pour le prochain cycle
+            profData.gatheringProgress = profData.gatheringProgress % actualTime;
         }
     }
 
