@@ -356,66 +356,54 @@ const UI = {
     },
 
 equipFromInventory(item, inventoryIndex) {
+    console.log('🚨 TEST SIMPLE - Item:', item.name, 'Index:', inventoryIndex);
+    console.log('🚨 Inventaire AVANT:', gameState.inventory.length);
+    
     const modal = document.getElementById('inventoryModal');
     const characterName = modal.dataset.character;
     const slotType = modal.dataset.slot;
     
     if (!characterName || !slotType) return;
     
-    console.log('🔧 Équipement de', item.name, 'sur', characterName, 'slot:', slotType);
-    console.log('🔧 Inventaire AVANT:', gameState.inventory.length);
+    // VERSION ULTRA-SIMPLE : juste supprimer de l'inventaire et équiper
     
-    // Déséquiper l'ancien objet s'il existe
-    const currentEquipment = gameState.characterEquipment[characterName];
-    if (currentEquipment && currentEquipment[slotType]) {
-        const currentItemId = currentEquipment[slotType];
-        const currentItem = EquipmentSystem.getEquipmentById(currentItemId);
-        
-        if (currentItem) {
-            console.log('🔧 Déséquipement de', currentItem.name);
-            EquipmentSystem.unequipItem(characterName, slotType);
-            this.addItemToInventory(currentItem);
-        }
-    }
+    // 1. Supprimer l'objet de l'inventaire
+    gameState.inventory.splice(inventoryIndex, 1);
+    console.log('🚨 Inventaire APRÈS suppression:', gameState.inventory.length);
     
-    console.log('🔧 Inventaire MILIEU:', gameState.inventory.length);
+    // 2. Équiper directement (sans déséquiper l'ancien)
+    EquipmentSystem.equipItem(characterName, item.id, slotType);
     
-    // Équiper le nouvel objet
-    if (EquipmentSystem.equipItem(characterName, item.id, slotType)) {
-        console.log('🔧 Suppression index', inventoryIndex);
-        gameState.inventory.splice(inventoryIndex, 1);
-        console.log('🔧 Inventaire APRÈS:', gameState.inventory.length);
-        
-        this.closeInventoryModal();
-        this.updateEquipmentTab();
-        this.showNotification(`✅ ${item.name} équipé sur ${characterName} !`, 'success');
-        
-        if (typeof SaveSystem !== 'undefined' && SaveSystem.autoSave) {
-            SaveSystem.autoSave();
-        }
-    }
+    // 3. Fermer et rafraîchir
+    this.closeInventoryModal();
+    this.updateEquipmentTab();
+    
+    this.showNotification(`✅ ${item.name} équipé sur ${characterName} !`, 'success');
 },
+
     // Déséquiper depuis la modal
     unequipFromModal(characterName, slotType) {
-        const currentEquipment = gameState.characterEquipment[characterName];
-        if (!currentEquipment || !currentEquipment[slotType]) return;
+            console.log('🚨 UNEQUIP DÉSACTIVÉ TEMPORAIREMENT');
+                return;
+        // const currentEquipment = gameState.characterEquipment[characterName];
+        //if (!currentEquipment || !currentEquipment[slotType]) return;
         
-        const currentItemId = currentEquipment[slotType];
-        const currentItem = EquipmentSystem.getEquipmentById(currentItemId);
+        //const currentItemId = currentEquipment[slotType];
+        //const currentItem = EquipmentSystem.getEquipmentById(currentItemId);
         
-        if (currentItem && EquipmentSystem.unequipItem(characterName, slotType)) {
+        //if (currentItem && EquipmentSystem.unequipItem(characterName, slotType)) {
             // ✅ IMPORTANT : Remettre l'objet dans l'inventaire
-            this.addItemToInventory(currentItem);
+           // this.addItemToInventory(currentItem);
             
-            this.closeInventoryModal();
-            this.updateEquipmentTab();
+         //   this.closeInventoryModal();
+         //   this.updateEquipmentTab();
+         //   
+         //   this.showNotification(`🗑️ ${currentItem.name} déséquipé de ${characterName}`, 'success');
             
-            this.showNotification(`🗑️ ${currentItem.name} déséquipé de ${characterName}`, 'success');
-            
-            if (typeof SaveSystem !== 'undefined' && SaveSystem.autoSave) {
-                SaveSystem.autoSave();
-            }
-        }
+          //  if (typeof SaveSystem !== 'undefined' && SaveSystem.autoSave) {
+         //       SaveSystem.autoSave();
+         //   }
+      //  }
     },
 
     // Ajouter un objet à l'inventaire (sans duplication)
