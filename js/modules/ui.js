@@ -355,68 +355,44 @@ const UI = {
         return card;
     },
 
-    equipFromInventory(item, inventoryIndex) {
-        console.log('🔥 DÉBUT equipFromInventory');
-        console.log('🔥 Item à équiper:', item.name, 'index:', inventoryIndex);
-        console.log('🔥 Inventaire AVANT:', gameState.inventory.length, 'objets');
-        
-        const modal = document.getElementById('inventoryModal');
-        const characterName = modal.dataset.character;
-        const slotType = modal.dataset.slot;
-        
-        if (!characterName || !slotType) return;
-        
-        console.log('🔥 Personnage:', characterName, 'Slot:', slotType);
-        
-        // Vérifier l'équipement actuel
-        const currentEquipment = gameState.characterEquipment[characterName];
-        const currentItemId = currentEquipment ? currentEquipment[slotType] : null;
-        
-        console.log('🔥 Équipement actuel:', currentItemId);
-        console.log('🔥 Nouvel item ID:', item.id);
-        console.log('🔥 Est-ce le même?', currentItemId === item.id);
-        
-        // Si c'est le même objet, ne rien faire
-        if (currentItemId === item.id) {
-            console.log('🔥 MÊME OBJET - Arrêt');
-            this.showNotification(`ℹ️ ${item.name} est déjà équipé sur ${characterName}`, 'info');
-            this.closeInventoryModal();
-            return;
+equipFromInventory(item, inventoryIndex) {
+    const modal = document.getElementById('inventoryModal');
+    const characterName = modal.dataset.character;
+    const slotType = modal.dataset.slot;
+    
+    if (!characterName || !slotType) return;
+    
+    // Récupérer l'équipement actuel
+    const currentEquipment = gameState.characterEquipment[characterName];
+    const currentItemId = currentEquipment ? currentEquipment[slotType] : null;
+    
+    console.log('🔥 Équipement actuel:', currentItemId, 'Nouvel item:', item.id);
+    
+    // Déséquiper l'ancien objet s'il existe (peu importe lequel)
+    if (currentItemId) {
+        const currentItem = EquipmentSystem.getEquipmentById(currentItemId);
+        if (currentItem) {
+            // Toujours déséquiper et remettre dans l'inventaire
+            EquipmentSystem.unequipItem(characterName, slotType);
+            this.addItemToInventory(currentItem);
+            console.log('🔥 Ancien objet déséquipé et remis dans inventaire');
         }
+    }
+    
+    // Équiper le nouvel objet
+    if (EquipmentSystem.equipItem(characterName, item.id, slotType)) {
+        // Supprimer l'objet de l'inventaire
+        gameState.inventory.splice(inventoryIndex, 1);
         
-        // Déséquiper l'ancien objet s'il existe
-        if (currentItemId) {
-            console.log('🔥 Déséquipement de:', currentItemId);
-            const currentItem = EquipmentSystem.getEquipmentById(currentItemId);
-            if (currentItem) {
-                this.addItemToInventory(currentItem);
-                console.log('🔥 Ancien objet remis dans inventaire');
-            }
+        this.closeInventoryModal();
+        this.updateEquipmentTab();
+        this.showNotification(`✅ ${item.name} équipé sur ${characterName} !`, 'success');
+        
+        if (typeof SaveSystem !== 'undefined' && SaveSystem.autoSave) {
+            SaveSystem.autoSave();
         }
-        
-        console.log('🔥 Inventaire MILIEU:', gameState.inventory.length, 'objets');
-        
-        // Équiper le nouvel objet
-        if (EquipmentSystem.equipItem(characterName, item.id, slotType)) {
-            console.log('🔥 Équipement réussi, suppression index:', inventoryIndex);
-            
-            // Supprimer l'objet de l'inventaire
-            gameState.inventory.splice(inventoryIndex, 1);
-            
-            console.log('🔥 Inventaire APRÈS suppression:', gameState.inventory.length, 'objets');
-            
-            this.closeInventoryModal();
-            this.updateEquipmentTab();
-            this.showNotification(`✅ ${item.name} équipé sur ${characterName} !`, 'success');
-            
-            if (typeof SaveSystem !== 'undefined' && SaveSystem.autoSave) {
-                SaveSystem.autoSave();
-            }
-        }
-        
-        console.log('🔥 FIN equipFromInventory');
-    },
-
+    }
+},
     // Déséquiper depuis la modal
     unequipFromModal(characterName, slotType) {
         const currentEquipment = gameState.characterEquipment[characterName];
