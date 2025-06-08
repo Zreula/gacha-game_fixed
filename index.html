@@ -12,29 +12,14 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(120, 80, 40, 0.4) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(80, 40, 120, 0.4) 0%, transparent 50%),
-                linear-gradient(135deg, #0a0a0a, #1a1a2e, #16213e, #0f3460);
-            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e1a;
+            color: #e8e8e8;
             min-height: 100vh;
             padding: 20px;
-            position: relative;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 10% 20%, rgba(255, 100, 50, 0.1) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(50, 100, 255, 0.1) 0%, transparent 20%);
-            pointer-events: none;
-            z-index: -1;
+            background-image: 
+                radial-gradient(circle at 25% 25%, #1a237e 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, #4a148c 0%, transparent 50%);
         }
 
         .container {
@@ -42,54 +27,169 @@
             margin: 0 auto;
         }
 
-        h1 {
+        .header {
             text-align: center;
-            margin-bottom: 30px;
-            color: #ffd700;
-            text-shadow: 
-                3px 3px 0px #8B4513,
-                6px 6px 10px rgba(0,0,0,0.8),
-                0 0 30px rgba(255,215,0,0.3);
-            font-size: 2.8em;
-            font-weight: bold;
-            letter-spacing: 2px;
-            position: relative;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+            border-radius: 12px;
+            border: 1px solid #3d3d5c;
         }
 
-        h1::before {
-            content: '⚔️';
-            position: absolute;
-            left: -60px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.8em;
-            animation: glow 2s ease-in-out infinite alternate;
+        .title {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
         }
 
-        h1::after {
-            content: '🛡️';
-            position: absolute;
-            right: -60px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 0.8em;
-            animation: glow 2s ease-in-out infinite alternate;
+        .subtitle {
+            color: #a0a0a0;
+            font-size: 1.1em;
         }
 
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 5px #ffd700;
-            }
-            to {
-                text-shadow: 0 0 20px #ffd700, 0 0 30px #ff8c00;
-            }
-        }
-
-        .game-layout {
+        .main-grid {
             display: grid;
-            grid-template-columns: 1fr 450px;
-            gap: 30px;
-            margin-bottom: 30px;
+            grid-template-columns: 1fr 420px;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .heroes-panel {
+            background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+            border: 1px solid #3d3d5c;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            background: linear-gradient(90deg, #2d2d44 0%, #3a3a54 100%);
+            padding: 16px 20px;
+            border-bottom: 1px solid #3d3d5c;
+        }
+
+        .panel-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-label {
+            font-size: 0.85em;
+            color: #a0a0a0;
+            font-weight: 500;
+        }
+
+        .filter-select {
+            background: #2a2a3e;
+            border: 1px solid #4a4a6a;
+            border-radius: 6px;
+            color: #e8e8e8;
+            padding: 8px 12px;
+            font-size: 0.9em;
+            min-width: 140px;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .clear-btn {
+            background: #374151;
+            border: 1px solid #4b5563;
+            color: #e8e8e8;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-top: 16px;
+        }
+
+        .clear-btn:hover {
+            background: #4b5563;
+        }
+
+        .heroes-grid {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            max-height: 580px;
+            overflow-y: auto;
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, #2a2a3e 0%, #363650 100%);
+            border: 1px solid #4a4a6a;
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .hero-card:hover {
+            transform: translateY(-2px);
+            border-color: #6366f1;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .hero-card.selected {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        .hero-card.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .hero-name {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 6px;
+            font-size: 1.05em;
+        }
+
+        .hero-class {
+            color: #a0a0a0;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            font-size: 0.85em;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            color: #d1d5db;
+        }
+
+        .stat-label {
+            color: #9ca3af;
         }
 
         .side-panel {
@@ -98,283 +198,237 @@
             gap: 20px;
         }
 
-        .heroes-section {
-            background: 
-                linear-gradient(145deg, rgba(139, 69, 19, 0.3), rgba(160, 82, 45, 0.2)),
-                rgba(0,0,0,0.4);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(15px);
-            border: 2px solid rgba(255,215,0,0.3);
-            box-shadow: 
-                0 8px 32px rgba(0,0,0,0.4),
-                inset 0 1px 0 rgba(255,255,255,0.1);
-        }
-
-        .team-section {
-            background: 
-                linear-gradient(145deg, rgba(25, 25, 112, 0.3), rgba(72, 61, 139, 0.2)),
-                rgba(0,0,0,0.4);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(15px);
-            border: 2px solid rgba(100,149,237,0.3);
-            box-shadow: 
-                0 8px 32px rgba(0,0,0,0.4),
-                inset 0 1px 0 rgba(255,255,255,0.1);
-        }
-
-        .section-title {
-            font-size: 1.5em;
-            margin-bottom: 20px;
-            color: #ffd700;
-            border-bottom: 2px solid #ffd700;
-            padding-bottom: 10px;
-        }
-
-        .heroes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
-        .hero-card {
-            background: 
-                linear-gradient(145deg, rgba(139, 69, 19, 0.6), rgba(101, 67, 33, 0.8)),
-                rgba(0,0,0,0.3);
+        .team-panel {
+            background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+            border: 1px solid #3d3d5c;
             border-radius: 12px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 2px solid rgba(205, 133, 63, 0.4);
-            position: relative;
-            overflow: hidden;
         }
 
-        .hero-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.2), transparent);
-            transition: left 0.6s;
-        }
-
-        .hero-card:hover::before {
-            left: 100%;
-        }
-
-        .hero-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 
-                0 15px 35px rgba(255,215,0,0.3),
-                0 5px 15px rgba(0,0,0,0.4);
-            border-color: #ffd700;
-            background: 
-                linear-gradient(145deg, rgba(139, 69, 19, 0.8), rgba(160, 82, 45, 0.9)),
-                rgba(0,0,0,0.3);
-        }
-
-        .hero-card.selected {
-            border-color: #00ff88;
-            background: 
-                linear-gradient(145deg, rgba(34, 139, 34, 0.6), rgba(0, 100, 0, 0.8)),
-                rgba(0,0,0,0.3);
-            box-shadow: 
-                0 0 20px rgba(0,255,136,0.4),
-                0 5px 15px rgba(0,0,0,0.4);
-        }
-
-        .hero-card.selected:hover {
-            box-shadow: 
-                0 0 25px rgba(0,255,136,0.6),
-                0 15px 35px rgba(0,255,136,0.3);
-        }
-
-        .hero-card.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .hero-name {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #ffd700;
-        }
-
-        .hero-role {
-            font-size: 0.9em;
-            color: #aaa;
-            margin-bottom: 10px;
-        }
-
-        .hero-stats {
-            font-size: 0.8em;
-        }
-
-        .stat-line {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 3px;
-        }
-
-        .team-slots {
+        .team-slots-grid {
+            padding: 20px;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
         .team-slot {
-            background: rgba(0,0,0,0.3);
-            border: 2px dashed #555;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
+            background: #1a1a2a;
+            border: 2px dashed #4a4a6a;
+            border-radius: 8px;
+            padding: 16px;
             min-height: 120px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            transition: all 0.3s ease;
+            align-items: center;
+            text-align: center;
+            transition: all 0.2s ease;
+            position: relative;
         }
 
         .team-slot.filled {
-            border: 2px solid #00ff88;
-            background: linear-gradient(145deg, #2a3e2a, #1e321e);
+            border: 2px solid #10b981;
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+            border-style: solid;
         }
 
         .team-slot.empty {
-            border-color: #ffd700;
+            border-color: #6b7280;
         }
 
-        .slot-hero {
-            font-weight: bold;
-            color: #ffd700;
-            margin-bottom: 5px;
+        .slot-hero-name {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+            font-size: 0.95em;
+        }
+
+        .slot-hero-class {
+            color: #a0a0a0;
+            font-size: 0.8em;
+            margin-bottom: 8px;
         }
 
         .remove-btn {
-            background: #ff4444;
+            background: #dc2626;
             color: white;
             border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 6px 12px;
+            border-radius: 4px;
             cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.3s ease;
+            font-size: 0.8em;
+            margin-top: 8px;
         }
 
         .remove-btn:hover {
-            background: #cc3333;
+            background: #b91c1c;
         }
 
-        .combat-section {
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            text-align: center;
+        .hp-display {
+            margin-top: 8px;
+            width: 100%;
         }
 
-        .boss-info {
-            background: 
-                radial-gradient(circle at center, rgba(220, 20, 60, 0.3), rgba(139, 0, 0, 0.4)),
-                rgba(0,0,0,0.6);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 3px solid #ff4444;
-            box-shadow: 
-                0 0 30px rgba(255, 68, 68, 0.4),
-                inset 0 0 20px rgba(255, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .boss-info::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: 
-                conic-gradient(from 0deg, transparent, rgba(255, 68, 68, 0.1), transparent);
-            animation: rotate 8s linear infinite;
-            z-index: -1;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .boss-name {
-            font-size: 1.8em;
-            color: #ff6b6b;
-            margin-bottom: 10px;
-            text-shadow: 
-                2px 2px 0px #8B0000,
-                4px 4px 10px rgba(255,68,68,0.6);
-            font-weight: bold;
-        }
-
-        .boss-hp {
-            font-size: 1.2em;
-            margin-bottom: 10px;
+        .hp-text {
+            font-size: 0.75em;
+            color: #e8e8e8;
+            margin-bottom: 4px;
         }
 
         .hp-bar {
-            background: #333;
-            height: 20px;
-            border-radius: 10px;
+            background: #374151;
+            height: 6px;
+            border-radius: 3px;
             overflow: hidden;
-            margin-bottom: 15px;
         }
 
         .hp-fill {
-            background: linear-gradient(90deg, #ff4444, #ff6666);
+            background: linear-gradient(90deg, #dc2626, #f59e0b, #10b981);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .death-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #dc2626;
+            font-weight: bold;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .synergy-panel {
+            background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+            border: 1px solid #3d3d5c;
+            border-radius: 12px;
+        }
+
+        .synergy-content {
+            padding: 20px;
+        }
+
+        .synergy-item {
+            background: #2a2a3e;
+            border: 1px solid #4a4a6a;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .synergy-item:hover {
+            border-color: #6366f1;
+        }
+
+        .synergy-name {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+            font-size: 0.9em;
+        }
+
+        .synergy-desc {
+            color: #a0a0a0;
+            font-size: 0.8em;
+        }
+
+        .synergy-item.balanced {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .active-synergies {
+            margin-bottom: 16px;
+            padding: 12px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid #10b981;
+            border-radius: 6px;
+        }
+
+        .active-title {
+            font-weight: 600;
+            color: #10b981;
+            margin-bottom: 8px;
+        }
+
+        .active-item {
+            color: #e8e8e8;
+            font-size: 0.85em;
+            margin-bottom: 4px;
+        }
+
+        .combat-section {
+            background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+            border: 1px solid #3d3d5c;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .boss-display {
+            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+            border: 1px solid #dc2626;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .boss-name {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .boss-hp-text {
+            color: #e8e8e8;
+            margin-bottom: 8px;
+        }
+
+        .boss-hp-bar {
+            background: #374151;
+            height: 16px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .boss-hp-fill {
+            background: linear-gradient(90deg, #dc2626, #f59e0b);
             height: 100%;
             transition: width 0.3s ease;
         }
 
+        .combat-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
         .combat-btn {
-            background: 
-                linear-gradient(145deg, #ff4444, #cc3333),
-                radial-gradient(circle at center, rgba(255,255,255,0.1), transparent);
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 1.2em;
-            font-weight: bold;
-            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 1em;
+            font-weight: 600;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin: 10px;
-            border: 2px solid rgba(255,68,68,0.5);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            box-shadow: 
-                0 4px 15px rgba(255, 68, 68, 0.3),
-                inset 0 1px 0 rgba(255,255,255,0.2);
+            transition: all 0.2s ease;
         }
 
         .combat-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 
-                0 8px 25px rgba(255, 68, 68, 0.5),
-                inset 0 1px 0 rgba(255,255,255,0.3);
-            background: 
-                linear-gradient(145deg, #ff6666, #ee4444),
-                radial-gradient(circle at center, rgba(255,255,255,0.2), transparent);
-        }
-
-        .combat-btn:active {
-            transform: translateY(-1px) scale(1.02);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
         }
 
         .combat-btn:disabled {
@@ -383,40 +437,70 @@
             transform: none;
         }
 
-        .timer {
-            font-size: 1.5em;
-            margin: 20px 0;
-            color: #ffd700;
+        .combat-info {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 20px;
         }
 
-        .damage-display {
-            font-size: 2em;
-            margin: 20px 0;
-            color: #00ff88;
-            font-weight: bold;
+        .info-item {
+            text-align: center;
         }
 
-        .best-score {
-            background: rgba(255,215,0,0.2);
-            border: 2px solid #ffd700;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 20px;
+        .info-label {
+            color: #a0a0a0;
+            font-size: 0.9em;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            color: #ffffff;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .score-panel {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid #6366f1;
+            border-radius: 8px;
+            padding: 16px;
         }
 
         .score-title {
-            color: #ffd700;
-            font-weight: bold;
-            margin-bottom: 10px;
+            color: #6366f1;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .score-value {
+            color: #ffffff;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .score-team {
+            color: #a0a0a0;
+            font-size: 0.85em;
         }
 
         .floating-damage {
             position: absolute;
-            color: #ff6666;
+            color: #dc2626;
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: 1.1em;
             pointer-events: none;
             animation: floatUp 1s ease-out forwards;
+        }
+
+        .floating-boss-damage {
+            position: absolute;
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1em;
+            pointer-events: none;
+            animation: floatUp 1.5s ease-out forwards;
         }
 
         @keyframes floatUp {
@@ -426,191 +510,30 @@
             }
             to {
                 opacity: 0;
-                transform: translateY(-50px);
+                transform: translateY(-40px);
             }
         }
 
-        .synergy-info {
-            background: rgba(0,255,136,0.1);
-            border: 1px solid #00ff88;
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 15px;
-            font-size: 0.9em;
-        }
-
-        .filters-section {
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .filter-group label {
-            font-size: 0.9em;
-            color: #ffd700;
-            font-weight: bold;
-        }
-
-        .filter-group select {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid #555;
-            border-radius: 8px;
-            color: #fff;
-            padding: 8px 12px;
-            font-size: 0.9em;
-            min-width: 150px;
-            cursor: pointer;
-        }
-
-        .filter-group select:focus {
-            outline: none;
-            border-color: #ffd700;
-        }
-
-        .filter-group select option {
-            background: #2a2a3e;
-            color: #fff;
-        }
-
-        .clear-filters-btn {
-            background: linear-gradient(145deg, #666, #444);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-        }
-
-        .clear-filters-btn:hover {
-            background: linear-gradient(145deg, #777, #555);
-            transform: translateY(-1px);
-        }
-
-        .synergy-guide {
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .guide-title {
-            font-size: 1.2em;
-            color: #ffd700;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #ffd700;
-            padding-bottom: 8px;
-        }
-
-        .synergy-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .synergy-item {
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            padding: 12px;
-            border-left: 4px solid #666;
-            transition: all 0.3s ease;
-        }
-
-        .synergy-item:hover {
-            border-left-color: #ffd700;
-            background: rgba(255,215,0,0.1);
-        }
-
-        .synergy-item.balanced {
-            border-left-color: #00ff88;
-            background: rgba(0,255,136,0.1);
-        }
-
-        .synergy-item.balanced:hover {
-            background: rgba(0,255,136,0.2);
-        }
-
-        .synergy-name {
-            font-weight: bold;
-            color: #ffd700;
-            margin-bottom: 4px;
-            font-size: 0.95em;
-        }
-
-        .synergy-desc {
-            color: #ccc;
-            font-size: 0.85em;
-        }
-
-        .hero-hp-bar {
-            margin-top: 8px;
-        }
-
-        .hp-text {
-            font-size: 0.75em;
-            color: #fff;
-            margin-bottom: 4px;
-        }
-
-        .mini-hp-bar {
-            background: #333;
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .mini-hp-fill {
-            background: linear-gradient(90deg, #ff4444, #ffaa44, #44ff44);
-            height: 100%;
-            transition: width 0.3s ease;
-            border-radius: 4px;
-        }
-
-        .death-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ff4444;
-            font-weight: bold;
-            border-radius: 12px;
-        }
-
-        .team-slot.filled {
-            position: relative;
-        }
-
-        .floating-boss-damage {
-            position: absolute;
-            color: #44ff44;
-            font-weight: bold;
-            font-size: 1.1em;
-            pointer-events: none;
-            animation: floatUp 1.5s ease-out forwards;
-        }
-
         @media (max-width: 1200px) {
-            .game-layout {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .side-panel {
+                flex-direction: row;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .side-panel {
+                flex-direction: column;
+            }
+            
+            .team-slots-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .heroes-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -618,44 +541,49 @@
 </head>
 <body>
     <div class="container">
-        <h1>⚔️ Boss Battle - Team Composition ⚔️</h1>
+        <div class="header">
+            <div class="title">⚔️ Boss Battle Arena</div>
+            <div class="subtitle">Assemble your team and face the ultimate challenge</div>
+        </div>
         
-        <div class="game-layout">
-            <div class="heroes-section">
-                <h2 class="section-title">🦸 Available Heroes</h2>
-                
-                <div class="filters-section">
-                    <div class="filter-group">
-                        <label>Filter by Class:</label>
-                        <select id="roleFilter">
-                            <option value="all">All Classes</option>
-                            <option value="Warrior">⚔️ Warriors</option>
-                            <option value="Hunter">🏹 Hunters</option>
-                            <option value="Mage">🔮 Mages</option>
-                            <option value="Warlock">🔥 Warlocks</option>
-                            <option value="Paladin">🛡️ Paladins</option>
-                            <option value="Priest">✨ Priests</option>
-                        </select>
-                    </div>
+        <div class="main-grid">
+            <div class="heroes-panel">
+                <div class="panel-header">
+                    <div class="panel-title">Available Champions</div>
                     
-                    <div class="filter-group">
-                        <label>Sort by:</label>
-                        <select id="sortFilter">
-                            <option value="name">Name (A-Z)</option>
-                            <option value="attack-desc">Attack (High to Low)</option>
-                            <option value="attack-asc">Attack (Low to High)</option>
-                            <option value="speed-desc">Speed (High to Low)</option>
-                            <option value="speed-asc">Speed (Low to High)</option>
-                            <option value="crit-desc">Crit (High to Low)</option>
-                            <option value="crit-asc">Crit (Low to High)</option>
-                            <option value="hp-desc">HP (High to Low)</option>
-                            <option value="hp-asc">HP (Low to High)</option>
-                            <option value="def-desc">Defense (High to Low)</option>
-                            <option value="def-asc">Defense (Low to High)</option>
-                        </select>
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label class="filter-label">Filter by Class:</label>
+                            <select class="filter-select" id="roleFilter">
+                                <option value="all">All Classes</option>
+                                <option value="Warrior">⚔️ Warriors</option>
+                                <option value="Hunter">🏹 Hunters</option>
+                                <option value="Mage">🔮 Mages</option>
+                                <option value="Warlock">🔥 Warlocks</option>
+                                <option value="Paladin">🛡️ Paladins</option>
+                                <option value="Priest">✨ Priests</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Sort by:</label>
+                            <select class="filter-select" id="sortFilter">
+                                <option value="name">Name (A-Z)</option>
+                                <option value="attack-desc">Attack (High to Low)</option>
+                                <option value="attack-asc">Attack (Low to High)</option>
+                                <option value="speed-desc">Speed (High to Low)</option>
+                                <option value="speed-asc">Speed (Low to High)</option>
+                                <option value="crit-desc">Crit (High to Low)</option>
+                                <option value="crit-asc">Crit (Low to High)</option>
+                                <option value="hp-desc">HP (High to Low)</option>
+                                <option value="hp-asc">HP (Low to High)</option>
+                                <option value="def-desc">Defense (High to Low)</option>
+                                <option value="def-asc">Defense (Low to High)</option>
+                            </select>
+                        </div>
+                        
+                        <button class="clear-btn" onclick="clearFilters()">Clear Filters</button>
                     </div>
-                    
-                    <button class="clear-filters-btn" onclick="clearFilters()">Clear Filters</button>
                 </div>
                 
                 <div class="heroes-grid" id="heroesGrid">
@@ -664,21 +592,27 @@
             </div>
             
             <div class="side-panel">
-                <div class="team-section">
-                    <h2 class="section-title">👥 Your Party (0/6)</h2>
-                    <div class="team-slots" id="teamSlots">
+                <div class="team-panel">
+                    <div class="panel-header">
+                        <div class="panel-title" id="teamTitle">Your Party (0/6)</div>
+                    </div>
+                    <div class="team-slots-grid" id="teamSlots">
                         <!-- Team slots will be generated by JavaScript -->
                     </div>
                     
-                    <div class="synergy-info" id="synergyInfo" style="display: none;">
-                        <strong>💫 Active Synergies:</strong>
-                        <div id="synergyList"></div>
+                    <div id="activeSynergies" style="display: none; padding: 0 20px 20px;">
+                        <div class="active-synergies">
+                            <div class="active-title">💫 Active Synergies</div>
+                            <div id="synergyList"></div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="synergy-guide">
-                    <h3 class="guide-title">📜 Synergy Guide</h3>
-                    <div class="synergy-list">
+                <div class="synergy-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">📜 Synergy Guide</div>
+                    </div>
+                    <div class="synergy-content">
                         <div class="synergy-item">
                             <div class="synergy-name">⚔️ Warrior's Might</div>
                             <div class="synergy-desc">3+ Warriors: ATK +20%</div>
@@ -713,24 +647,34 @@
         </div>
         
         <div class="combat-section">
-            <div class="boss-info">
+            <div class="boss-display">
                 <div class="boss-name">🐲 Deathwing the Destroyer</div>
-                <div class="boss-hp">HP: <span id="bossHp">1000000</span> / 1000000</div>
-                <div class="hp-bar">
-                    <div class="hp-fill" id="hpFill" style="width: 100%"></div>
+                <div class="boss-hp-text">HP: <span id="bossHp">1000000</span> / 1000000</div>
+                <div class="boss-hp-bar">
+                    <div class="boss-hp-fill" id="hpFill" style="width: 100%"></div>
                 </div>
             </div>
             
-            <button class="combat-btn" id="startCombat">🗡️ Start Battle</button>
-            <button class="combat-btn" id="resetBoss" style="display: none;">🔄 Reset Boss</button>
+            <div class="combat-controls">
+                <button class="combat-btn" id="startCombat">🗡️ Start Battle</button>
+                <button class="combat-btn" id="resetBoss" style="display: none;">🔄 Reset Boss</button>
+            </div>
             
-            <div class="timer" id="timer" style="display: none;">⏱️ Time: 60s</div>
-            <div class="damage-display" id="damageDisplay">Total Damage: 0</div>
+            <div class="combat-info">
+                <div class="info-item" id="timer" style="display: none;">
+                    <div class="info-label">Time Remaining</div>
+                    <div class="info-value">60s</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Total Damage</div>
+                    <div class="info-value" id="damageDisplay">0</div>
+                </div>
+            </div>
             
-            <div class="best-score">
+            <div class="score-panel">
                 <div class="score-title">🏆 Best Score</div>
-                <div id="bestScore">0 damage</div>
-                <div id="bestTeam" style="margin-top: 10px; font-size: 0.9em; color: #ccc;"></div>
+                <div class="score-value" id="bestScore">0 damage</div>
+                <div class="score-team" id="bestTeam"></div>
             </div>
         </div>
     </div>
@@ -762,8 +706,8 @@
 
         // Game variables
         let selectedTeam = [];
-        let filteredHeroes = [...heroes]; // Copy of heroes array for filtering
-        let teamHeroStates = []; // Track individual hero HP during combat
+        let filteredHeroes = [...heroes];
+        let teamHeroStates = [];
         let gameState = {
             combat: false,
             timeLeft: 60,
@@ -788,7 +732,7 @@
 
         // Initialization
         function init() {
-            renderHeroes();
+            applyFilters();
             renderTeamSlots();
             loadBestScore();
             setupFilterListeners();
@@ -861,7 +805,6 @@
             grid.innerHTML = '';
             
             filteredHeroes.forEach((hero) => {
-                // Find the original index of this hero in the heroes array
                 const originalIndex = heroes.findIndex(h => h.name === hero.name);
                 
                 const heroCard = document.createElement('div');
@@ -878,26 +821,26 @@
                 
                 heroCard.innerHTML = `
                     <div class="hero-name">${hero.name}</div>
-                    <div class="hero-role">${getRoleIcon(hero.role)} ${hero.role}</div>
+                    <div class="hero-class">${getRoleIcon(hero.role)} ${hero.role}</div>
                     <div class="hero-stats">
-                        <div class="stat-line">
-                            <span>⚔️ ATK:</span>
+                        <div class="stat-row">
+                            <span class="stat-label">ATK:</span>
                             <span>${hero.attack}</span>
                         </div>
-                        <div class="stat-line">
-                            <span>⚡ SPD:</span>
+                        <div class="stat-row">
+                            <span class="stat-label">SPD:</span>
                             <span>${hero.speed}</span>
                         </div>
-                        <div class="stat-line">
-                            <span>💥 CRIT:</span>
+                        <div class="stat-row">
+                            <span class="stat-label">CRIT:</span>
                             <span>${hero.crit}%</span>
                         </div>
-                        <div class="stat-line">
-                            <span>❤️ HP:</span>
+                        <div class="stat-row">
+                            <span class="stat-label">HP:</span>
                             <span>${hero.hp}</span>
                         </div>
-                        <div class="stat-line">
-                            <span>🛡️ DEF:</span>
+                        <div class="stat-row">
+                            <span class="stat-label">DEF:</span>
                             <span>${hero.def}</span>
                         </div>
                     </div>
@@ -906,9 +849,8 @@
                 grid.appendChild(heroCard);
             });
             
-            // Update heroes count display
-            const heroesSection = document.querySelector('.heroes-section .section-title');
-            heroesSection.textContent = `🦸 Available Heroes (${filteredHeroes.length}/${heroes.length})`;
+            const heroesSection = document.querySelector('.heroes-panel .panel-title');
+            heroesSection.textContent = `Available Champions (${filteredHeroes.length}/${heroes.length})`;
         }
 
         function getRoleIcon(role) {
@@ -943,14 +885,15 @@
             
             for (let i = 0; i < 6; i++) {
                 const slot = document.createElement('div');
-                slot.className = 'team-slot';
+                slot.className = 'team-slot empty';
                 slot.id = `slot-${i}`;
+                slot.innerHTML = '<div style="color: #6b7280;">Empty Slot</div>';
                 slots.appendChild(slot);
             }
         }
 
         function updateTeamDisplay() {
-            document.querySelector('.team-section h2').textContent = `👥 Your Party (${selectedTeam.length}/6)`;
+            document.getElementById('teamTitle').textContent = `Your Party (${selectedTeam.length}/6)`;
             
             for (let i = 0; i < 6; i++) {
                 const slot = document.getElementById(`slot-${i}`);
@@ -964,26 +907,26 @@
                     if (gameState.combat) {
                         const deathOverlay = !heroState.alive ? '<div class="death-overlay">💀 DEAD</div>' : '';
                         slot.innerHTML = `
-                            <div class="slot-hero">${getRoleIcon(hero.role)} ${hero.name}</div>
-                            <div style="font-size: 0.8em; color: #ccc;">${hero.role}</div>
-                            <div class="hero-hp-bar">
+                            <div class="slot-hero-name">${getRoleIcon(hero.role)} ${hero.name}</div>
+                            <div class="slot-hero-class">${hero.role}</div>
+                            <div class="hp-display">
                                 <div class="hp-text">HP: ${heroState.currentHp}/${heroState.maxHp}</div>
-                                <div class="mini-hp-bar">
-                                    <div class="mini-hp-fill" style="width: ${(heroState.currentHp / heroState.maxHp) * 100}%"></div>
+                                <div class="hp-bar">
+                                    <div class="hp-fill" style="width: ${(heroState.currentHp / heroState.maxHp) * 100}%"></div>
                                 </div>
-                                ${deathOverlay}
                             </div>
+                            ${deathOverlay}
                         `;
                     } else {
                         slot.innerHTML = `
-                            <div class="slot-hero">${getRoleIcon(hero.role)} ${hero.name}</div>
-                            <div style="font-size: 0.8em; color: #ccc;">${hero.role}</div>
+                            <div class="slot-hero-name">${getRoleIcon(hero.role)} ${hero.name}</div>
+                            <div class="slot-hero-class">${hero.role}</div>
                             <button class="remove-btn" onclick="removeFromTeam(${i})">Remove</button>
                         `;
                     }
                 } else {
                     slot.className = 'team-slot empty';
-                    slot.innerHTML = '<div style="color: #666;">Empty Slot</div>';
+                    slot.innerHTML = '<div style="color: #6b7280;">Empty Slot</div>';
                 }
             }
         }
@@ -1020,12 +963,12 @@
                 }
             });
             
-            const synergyInfo = document.getElementById('synergyInfo');
+            const synergyInfo = document.getElementById('activeSynergies');
             const synergyList = document.getElementById('synergyList');
             
             if (activeSynergies.length > 0) {
                 synergyInfo.style.display = 'block';
-                synergyList.innerHTML = activeSynergies.map(s => `<div>• ${s}</div>`).join('');
+                synergyList.innerHTML = activeSynergies.map(s => `<div class="active-item">• ${s}</div>`).join('');
             } else {
                 synergyInfo.style.display = 'none';
             }
@@ -1041,7 +984,6 @@
             gameState.timeLeft = 60;
             gameState.totalDamage = 0;
             
-            // Initialize hero states
             teamHeroStates = selectedTeam.map(heroIndex => {
                 const hero = heroes[heroIndex];
                 return {
@@ -1055,7 +997,7 @@
             document.getElementById('resetBoss').style.display = 'inline-block';
             document.getElementById('timer').style.display = 'block';
             
-            updateTeamDisplay(); // Update to show HP bars
+            updateTeamDisplay();
             combatLoop();
         }
 
@@ -1065,7 +1007,6 @@
                 return;
             }
             
-            // Check if any heroes are alive
             const aliveHeroes = teamHeroStates.filter(state => state.alive);
             if (aliveHeroes.length === 0) {
                 alert('💀 All heroes have fallen! Combat ended.');
@@ -1073,42 +1014,35 @@
                 return;
             }
             
-            // Phase 1: Heroes attack boss
             let teamDamage = 0;
             selectedTeam.forEach((heroIndex, i) => {
-                if (!teamHeroStates[i].alive) return; // Skip dead heroes
+                if (!teamHeroStates[i].alive) return;
                 
                 const hero = heroes[heroIndex];
                 let damage = hero.attack;
                 
-                // Critical hit chance
                 if (Math.random() * 100 < hero.crit) {
                     damage *= 2;
                 }
                 
-                // Synergy bonuses (simulation)
                 if (selectedTeam.length >= 3) {
-                    damage *= 1.1; // Team bonus
+                    damage *= 1.1;
                 }
                 
                 teamDamage += Math.floor(damage);
             });
             
-            // Apply damage to boss
             gameState.totalDamage += teamDamage;
             gameState.bossHp = Math.max(0, gameState.bossHp - teamDamage);
             
-            // Phase 2: Boss attacks random hero
             if (gameState.bossHp > 0 && aliveHeroes.length > 0) {
                 bossAttack();
             }
             
-            // Update display
             updateCombatDisplay();
             updateTeamDisplay();
             showFloatingDamage(teamDamage);
             
-            // Continue combat
             gameState.timeLeft -= 1;
             setTimeout(combatLoop, 1000);
         }
@@ -1121,26 +1055,37 @@
             
             if (aliveHeroIndices.length === 0) return;
             
-            // Select random alive hero
             const targetIndex = aliveHeroIndices[Math.floor(Math.random() * aliveHeroIndices.length)];
             const targetHero = heroes[selectedTeam[targetIndex]];
             const targetState = teamHeroStates[targetIndex];
             
-            // Calculate boss damage (reduced by hero defense)
             let bossDamage = gameState.bossAttack;
-            const damageReduction = targetHero.def * 0.5; // Defense reduces damage
-            bossDamage = Math.max(10, bossDamage - damageReduction); // Minimum 10 damage
+            const damageReduction = targetHero.def * 0.5;
+            bossDamage = Math.max(10, bossDamage - damageReduction);
             
-            // Apply damage to hero
             targetState.currentHp = Math.max(0, targetState.currentHp - Math.floor(bossDamage));
             
-            // Check if hero died
             if (targetState.currentHp <= 0) {
                 targetState.alive = false;
             }
             
-            // Show floating damage on hero
             showFloatingBossDamage(targetIndex, Math.floor(bossDamage));
+        }
+
+        function showFloatingDamage(damage) {
+            const bossInfo = document.querySelector('.boss-display');
+            const floatingDamage = document.createElement('div');
+            floatingDamage.className = 'floating-damage';
+            floatingDamage.textContent = `-${Math.floor(damage).toLocaleString()}`;
+            floatingDamage.style.left = `${Math.random() * 200 + 50}px`;
+            floatingDamage.style.top = '50px';
+            
+            bossInfo.style.position = 'relative';
+            bossInfo.appendChild(floatingDamage);
+            
+            setTimeout(() => {
+                floatingDamage.remove();
+            }, 1000);
         }
 
         function showFloatingBossDamage(heroIndex, damage) {
@@ -1162,28 +1107,16 @@
         }
 
         function updateCombatDisplay() {
-            document.getElementById('timer').textContent = `⏱️ Time: ${gameState.timeLeft}s`;
-            document.getElementById('damageDisplay').textContent = `Total Damage: ${Math.floor(gameState.totalDamage).toLocaleString()}`;
+            const timerElement = document.getElementById('timer').querySelector('.info-value');
+            if (timerElement) {
+                timerElement.textContent = `${gameState.timeLeft}s`;
+            }
+            
+            document.getElementById('damageDisplay').textContent = Math.floor(gameState.totalDamage).toLocaleString();
             document.getElementById('bossHp').textContent = Math.floor(gameState.bossHp).toLocaleString();
             
             const hpPercentage = (gameState.bossHp / gameState.maxBossHp) * 100;
             document.getElementById('hpFill').style.width = `${hpPercentage}%`;
-        }
-
-        function showFloatingDamage(damage) {
-            const bossInfo = document.querySelector('.boss-info');
-            const floatingDamage = document.createElement('div');
-            floatingDamage.className = 'floating-damage';
-            floatingDamage.textContent = `-${Math.floor(damage).toLocaleString()}`;
-            floatingDamage.style.left = `${Math.random() * 200 + 50}px`;
-            floatingDamage.style.top = '50px';
-            
-            bossInfo.style.position = 'relative';
-            bossInfo.appendChild(floatingDamage);
-            
-            setTimeout(() => {
-                floatingDamage.remove();
-            }, 1000);
         }
 
         function endCombat() {
@@ -1192,7 +1125,6 @@
             document.getElementById('timer').style.display = 'none';
             document.getElementById('startCombat').style.display = 'inline-block';
             
-            // Check if it's a new record
             if (gameState.totalDamage > gameState.bestScore) {
                 gameState.bestScore = gameState.totalDamage;
                 gameState.bestTeam = [...selectedTeam];
@@ -1202,6 +1134,7 @@
             
             updateBestScoreDisplay();
             updateTeamDisplay();
+        }
 
         function resetBoss() {
             gameState.bossHp = gameState.maxBossHp;
@@ -1209,7 +1142,6 @@
             gameState.combat = false;
             gameState.timeLeft = 60;
             
-            // Reset hero states
             teamHeroStates = [];
             
             document.getElementById('resetBoss').style.display = 'none';
@@ -1217,7 +1149,7 @@
             document.getElementById('timer').style.display = 'none';
             
             updateCombatDisplay();
-            updateTeamDisplay(); // Update to hide HP bars
+            updateTeamDisplay();
         }
 
         function updateBestScoreDisplay() {
@@ -1234,22 +1166,17 @@
                 bestScore: gameState.bestScore,
                 bestTeam: gameState.bestTeam
             };
-            // Simulate save (in a real game, we would use a database)
             console.log('Score saved:', saveData);
         }
 
         function loadBestScore() {
-            // Simulate loading (in a real game, we would load from a database)
             updateBestScoreDisplay();
         }
 
-        // Event listeners
         document.getElementById('startCombat').addEventListener('click', startCombat);
         document.getElementById('resetBoss').addEventListener('click', resetBoss);
 
-        // Initialize game
         init();
-    }
     </script>
 </body>
 </html>
