@@ -366,10 +366,17 @@ equipFromInventory(item, inventoryIndex) {
     
     console.log(`🔧 Inventaire AVANT: ${gameState.inventory.length}`);
     
-    // ÉTAPE 1: Vérifier s'il y a déjà un objet équipé dans ce slot
+    // VÉRIFICATION IMPORTANTE: Si l'objet est déjà équipé sur ce personnage, ne rien faire
     const currentEquipment = gameState.characterEquipment[characterName];
     const currentEquippedId = currentEquipment && currentEquipment[slotType];
     
+    if (currentEquippedId === item.id) {
+        console.log(`⚠️ ${item.name} est déjà équipé sur ${characterName}`);
+        this.closeInventoryModal();
+        return;
+    }
+    
+    // ÉTAPE 1: Vérifier s'il y a déjà un AUTRE objet équipé dans ce slot
     if (currentEquippedId) {
         // Il y a déjà un objet équipé, le déséquiper d'abord
         console.log(`🔧 Déséquipement de ${currentEquippedId}`);
