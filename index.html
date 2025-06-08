@@ -344,20 +344,37 @@
         }
 
         .combat-btn {
-            background: linear-gradient(145deg, #ff4444, #cc3333);
+            background: 
+                linear-gradient(145deg, #ff4444, #cc3333),
+                radial-gradient(circle at center, rgba(255,255,255,0.1), transparent);
             color: white;
             border: none;
             padding: 15px 30px;
             font-size: 1.2em;
+            font-weight: bold;
             border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             margin: 10px;
+            border: 2px solid rgba(255,68,68,0.5);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            box-shadow: 
+                0 4px 15px rgba(255, 68, 68, 0.3),
+                inset 0 1px 0 rgba(255,255,255,0.2);
         }
 
         .combat-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255,68,68,0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 
+                0 8px 25px rgba(255, 68, 68, 0.5),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            background: 
+                linear-gradient(145deg, #ff6666, #ee4444),
+                radial-gradient(circle at center, rgba(255,255,255,0.2), transparent);
+        }
+
+        .combat-btn:active {
+            transform: translateY(-1px) scale(1.02);
         }
 
         .combat-btn:disabled {
@@ -539,6 +556,59 @@
             font-size: 0.85em;
         }
 
+        .hero-hp-bar {
+            margin-top: 8px;
+        }
+
+        .hp-text {
+            font-size: 0.75em;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .mini-hp-bar {
+            background: #333;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mini-hp-fill {
+            background: linear-gradient(90deg, #ff4444, #ffaa44, #44ff44);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .death-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff4444;
+            font-weight: bold;
+            border-radius: 12px;
+        }
+
+        .team-slot.filled {
+            position: relative;
+        }
+
+        .floating-boss-damage {
+            position: absolute;
+            color: #44ff44;
+            font-weight: bold;
+            font-size: 1.1em;
+            pointer-events: none;
+            animation: floatUp 1.5s ease-out forwards;
+        }
+
         @media (max-width: 1200px) {
             .game-layout {
                 grid-template-columns: 1fr;
@@ -578,6 +648,10 @@
                             <option value="speed-asc">Speed (Low to High)</option>
                             <option value="crit-desc">Crit (High to Low)</option>
                             <option value="crit-asc">Crit (Low to High)</option>
+                            <option value="hp-desc">HP (High to Low)</option>
+                            <option value="hp-asc">HP (Low to High)</option>
+                            <option value="def-desc">Defense (High to Low)</option>
+                            <option value="def-asc">Defense (Low to High)</option>
                         </select>
                     </div>
                     
@@ -664,31 +738,32 @@
     <script>
         // Hero data
         const heroes = [
-            { name: "Thorak Ironbane", role: "Warrior", attack: 150, speed: 80, crit: 15, special: "Berserker Rage" },
-            { name: "Sylvanna Swiftarrow", role: "Hunter", attack: 120, speed: 120, crit: 25, special: "Beast Mastery" },
-            { name: "Zephyros the Arcane", role: "Mage", attack: 200, speed: 60, crit: 10, special: "Arcane Blast" },
-            { name: "Grimshield Stonebeard", role: "Paladin", attack: 100, speed: 50, crit: 20, special: "Divine Shield" },
-            { name: "Varok Bloodfury", role: "Warrior", attack: 140, speed: 70, crit: 18, special: "Berserker Rage" },
-            { name: "Lythara Moonwhisper", role: "Priest", attack: 80, speed: 90, crit: 12, special: "Divine Healing" },
-            { name: "Kaelen Stormstrike", role: "Warrior", attack: 130, speed: 85, crit: 22, special: "Berserker Rage" },
-            { name: "Velara Nightshot", role: "Hunter", attack: 110, speed: 100, crit: 20, special: "Beast Mastery" },
-            { name: "Nethys Voidcaller", role: "Warlock", attack: 180, speed: 70, crit: 15, special: "Shadow Magic" },
-            { name: "Thorgrim Shieldwall", role: "Paladin", attack: 90, speed: 45, crit: 10, special: "Divine Shield" },
-            { name: "Malachar Soulreaper", role: "Warlock", attack: 220, speed: 55, crit: 8, special: "Shadow Magic" },
-            { name: "Aerion Lightbringer", role: "Priest", attack: 70, speed: 75, crit: 14, special: "Divine Healing" },
-            { name: "Kythara Rapidfire", role: "Hunter", attack: 125, speed: 110, crit: 28, special: "Beast Mastery" },
-            { name: "Valdris Dawnbreaker", role: "Priest", attack: 90, speed: 85, crit: 16, special: "Divine Healing" },
-            { name: "Borin Forgehammer", role: "Paladin", attack: 110, speed: 55, crit: 25, special: "Divine Shield" },
-            { name: "Thyssa Shadowbolt", role: "Hunter", attack: 115, speed: 95, crit: 30, special: "Beast Mastery" },
-            { name: "Drakthar Bloodaxe", role: "Warrior", attack: 135, speed: 90, crit: 20, special: "Berserker Rage" },
-            { name: "Mystral Frostweaver", role: "Mage", attack: 160, speed: 65, crit: 12, special: "Arcane Blast" },
-            { name: "Nyssa Wildshot", role: "Hunter", attack: 105, speed: 115, crit: 24, special: "Beast Mastery" },
-            { name: "Gorath Ironwall", role: "Paladin", attack: 120, speed: 60, crit: 18, special: "Divine Shield" }
+            { name: "Thorak Ironbane", role: "Warrior", attack: 150, speed: 80, crit: 15, hp: 800, def: 45, special: "Berserker Rage" },
+            { name: "Sylvanna Swiftarrow", role: "Hunter", attack: 120, speed: 120, crit: 25, hp: 650, def: 30, special: "Beast Mastery" },
+            { name: "Zephyros the Arcane", role: "Mage", attack: 200, speed: 60, crit: 10, hp: 500, def: 20, special: "Arcane Blast" },
+            { name: "Grimshield Stonebeard", role: "Paladin", attack: 100, speed: 50, crit: 20, hp: 900, def: 60, special: "Divine Shield" },
+            { name: "Varok Bloodfury", role: "Warrior", attack: 140, speed: 70, crit: 18, hp: 750, def: 40, special: "Berserker Rage" },
+            { name: "Lythara Moonwhisper", role: "Priest", attack: 80, speed: 90, crit: 12, hp: 600, def: 25, special: "Divine Healing" },
+            { name: "Kaelen Stormstrike", role: "Warrior", attack: 130, speed: 85, crit: 22, hp: 720, def: 38, special: "Berserker Rage" },
+            { name: "Velara Nightshot", role: "Hunter", attack: 110, speed: 100, crit: 20, hp: 620, def: 28, special: "Beast Mastery" },
+            { name: "Nethys Voidcaller", role: "Warlock", attack: 180, speed: 70, crit: 15, hp: 550, def: 22, special: "Shadow Magic" },
+            { name: "Thorgrim Shieldwall", role: "Paladin", attack: 90, speed: 45, crit: 10, hp: 950, def: 65, special: "Divine Shield" },
+            { name: "Malachar Soulreaper", role: "Warlock", attack: 220, speed: 55, crit: 8, hp: 480, def: 18, special: "Shadow Magic" },
+            { name: "Aerion Lightbringer", role: "Priest", attack: 70, speed: 75, crit: 14, hp: 580, def: 30, special: "Divine Healing" },
+            { name: "Kythara Rapidfire", role: "Hunter", attack: 125, speed: 110, crit: 28, hp: 600, def: 25, special: "Beast Mastery" },
+            { name: "Valdris Dawnbreaker", role: "Priest", attack: 90, speed: 85, crit: 16, hp: 640, def: 35, special: "Divine Healing" },
+            { name: "Borin Forgehammer", role: "Paladin", attack: 110, speed: 55, crit: 25, hp: 880, def: 55, special: "Divine Shield" },
+            { name: "Thyssa Shadowbolt", role: "Hunter", attack: 115, speed: 95, crit: 30, hp: 590, def: 26, special: "Beast Mastery" },
+            { name: "Drakthar Bloodaxe", role: "Warrior", attack: 135, speed: 90, crit: 20, hp: 780, def: 42, special: "Berserker Rage" },
+            { name: "Mystral Frostweaver", role: "Mage", attack: 160, speed: 65, crit: 12, hp: 520, def: 24, special: "Arcane Blast" },
+            { name: "Nyssa Wildshot", role: "Hunter", attack: 105, speed: 115, crit: 24, hp: 580, def: 24, special: "Beast Mastery" },
+            { name: "Gorath Ironwall", role: "Paladin", attack: 120, speed: 60, crit: 18, hp: 920, def: 58, special: "Divine Shield" }
         ];
 
         // Game variables
         let selectedTeam = [];
         let filteredHeroes = [...heroes]; // Copy of heroes array for filtering
+        let teamHeroStates = []; // Track individual hero HP during combat
         let gameState = {
             combat: false,
             timeLeft: 60,
@@ -696,7 +771,8 @@
             bossHp: 1000000,
             maxBossHp: 1000000,
             bestScore: 0,
-            bestTeam: []
+            bestTeam: [],
+            bossAttack: 180
         };
 
         // Synergies
@@ -757,6 +833,18 @@
                 case 'crit-asc':
                     filteredHeroes.sort((a, b) => a.crit - b.crit);
                     break;
+                case 'hp-desc':
+                    filteredHeroes.sort((a, b) => b.hp - a.hp);
+                    break;
+                case 'hp-asc':
+                    filteredHeroes.sort((a, b) => a.hp - b.hp);
+                    break;
+                case 'def-desc':
+                    filteredHeroes.sort((a, b) => b.def - a.def);
+                    break;
+                case 'def-asc':
+                    filteredHeroes.sort((a, b) => a.def - b.def);
+                    break;
             }
             
             renderHeroes();
@@ -803,6 +891,14 @@
                         <div class="stat-line">
                             <span>💥 CRIT:</span>
                             <span>${hero.crit}%</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>❤️ HP:</span>
+                            <span>${hero.hp}</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>🛡️ DEF:</span>
+                            <span>${hero.def}</span>
                         </div>
                     </div>
                 `;
@@ -854,19 +950,36 @@
         }
 
         function updateTeamDisplay() {
-            document.querySelector('.team-section h2').textContent = `👥 Your Team (${selectedTeam.length}/6)`;
+            document.querySelector('.team-section h2').textContent = `👥 Your Party (${selectedTeam.length}/6)`;
             
             for (let i = 0; i < 6; i++) {
                 const slot = document.getElementById(`slot-${i}`);
                 
                 if (i < selectedTeam.length) {
                     const hero = heroes[selectedTeam[i]];
+                    const heroState = teamHeroStates[i] || { currentHp: hero.hp, maxHp: hero.hp, alive: true };
+                    
                     slot.className = 'team-slot filled';
-                    slot.innerHTML = `
-                        <div class="slot-hero">${getRoleIcon(hero.role)} ${hero.name}</div>
-                        <div style="font-size: 0.8em; color: #ccc;">${hero.role}</div>
-                        <button class="remove-btn" onclick="removeFromTeam(${i})">Remove</button>
-                    `;
+                    
+                    if (gameState.combat) {
+                        slot.innerHTML = `
+                            <div class="slot-hero">${getRoleIcon(hero.role)} ${hero.name}</div>
+                            <div style="font-size: 0.8em; color: #ccc;">${hero.role}</div>
+                            <div class="hero-hp-bar">
+                                <div class="hp-text">HP: ${heroState.currentHp}/${heroState.maxHp}</div>
+                                <div class="mini-hp-bar">
+                                    <div class="mini-hp-fill" style="width: ${(heroState.currentHp / heroState.maxHp) * 100}%"></div>
+                                </div>
+                                ${!heroState.alive ? '<div class="death-overlay">💀 DEAD</div>' : ''}
+                            </div>
+                        `;
+                    } else {
+                        slot.innerHTML = `
+                            <div class="slot-hero">${getRoleIcon(hero.role)} ${hero.name}</div>
+                            <div style="font-size: 0.8em; color: #ccc;">${hero.role}</div>
+                            <button class="remove-btn" onclick="removeFromTeam(${i})">Remove</button>
+                        `;
+                    }
                 } else {
                     slot.className = 'team-slot empty';
                     slot.innerHTML = '<div style="color: #666;">Empty Slot</div>';
@@ -927,10 +1040,21 @@
             gameState.timeLeft = 60;
             gameState.totalDamage = 0;
             
+            // Initialize hero states
+            teamHeroStates = selectedTeam.map(heroIndex => {
+                const hero = heroes[heroIndex];
+                return {
+                    currentHp: hero.hp,
+                    maxHp: hero.hp,
+                    alive: true
+                };
+            });
+            
             document.getElementById('startCombat').style.display = 'none';
             document.getElementById('resetBoss').style.display = 'inline-block';
             document.getElementById('timer').style.display = 'block';
             
+            updateTeamDisplay(); // Update to show HP bars
             combatLoop();
         }
 
@@ -940,9 +1064,19 @@
                 return;
             }
             
-            // Calculate team damage
+            // Check if any heroes are alive
+            const aliveHeroes = teamHeroStates.filter(state => state.alive);
+            if (aliveHeroes.length === 0) {
+                alert('💀 All heroes have fallen! Combat ended.');
+                endCombat();
+                return;
+            }
+            
+            // Phase 1: Heroes attack boss
             let teamDamage = 0;
-            selectedTeam.forEach(heroIndex => {
+            selectedTeam.forEach((heroIndex, i) => {
+                if (!teamHeroStates[i].alive) return; // Skip dead heroes
+                
                 const hero = heroes[heroIndex];
                 let damage = hero.attack;
                 
@@ -963,13 +1097,67 @@
             gameState.totalDamage += teamDamage;
             gameState.bossHp = Math.max(0, gameState.bossHp - teamDamage);
             
+            // Phase 2: Boss attacks random hero
+            if (gameState.bossHp > 0 && aliveHeroes.length > 0) {
+                bossAttack();
+            }
+            
             // Update display
             updateCombatDisplay();
+            updateTeamDisplay();
             showFloatingDamage(teamDamage);
             
             // Continue combat
             gameState.timeLeft -= 1;
             setTimeout(combatLoop, 1000);
+        }
+
+        function bossAttack() {
+            const aliveHeroIndices = teamHeroStates
+                .map((state, index) => ({ state, index }))
+                .filter(item => item.state.alive)
+                .map(item => item.index);
+            
+            if (aliveHeroIndices.length === 0) return;
+            
+            // Select random alive hero
+            const targetIndex = aliveHeroIndices[Math.floor(Math.random() * aliveHeroIndices.length)];
+            const targetHero = heroes[selectedTeam[targetIndex]];
+            const targetState = teamHeroStates[targetIndex];
+            
+            // Calculate boss damage (reduced by hero defense)
+            let bossDamage = gameState.bossAttack;
+            const damageReduction = targetHero.def * 0.5; // Defense reduces damage
+            bossDamage = Math.max(10, bossDamage - damageReduction); // Minimum 10 damage
+            
+            // Apply damage to hero
+            targetState.currentHp = Math.max(0, targetState.currentHp - Math.floor(bossDamage));
+            
+            // Check if hero died
+            if (targetState.currentHp <= 0) {
+                targetState.alive = false;
+            }
+            
+            // Show floating damage on hero
+            showFloatingBossDamage(targetIndex, Math.floor(bossDamage));
+        }
+
+        function showFloatingBossDamage(heroIndex, damage) {
+            const slot = document.getElementById(`slot-${heroIndex}`);
+            if (!slot) return;
+            
+            const floatingDamage = document.createElement('div');
+            floatingDamage.className = 'floating-boss-damage';
+            floatingDamage.textContent = `-${damage}`;
+            floatingDamage.style.left = `${Math.random() * 50 + 25}%`;
+            floatingDamage.style.top = '20%';
+            
+            slot.style.position = 'relative';
+            slot.appendChild(floatingDamage);
+            
+            setTimeout(() => {
+                floatingDamage.remove();
+            }, 1500);
         }
 
         function updateCombatDisplay() {
@@ -1012,6 +1200,16 @@
             }
             
             updateBestScoreDisplay();
+            updateTeamDisplay(); // Keep showing final HP states
+        } Record! ${Math.floor(gameState.totalDamage).toLocaleString()} damage!`);
+            }
+            
+            updateBestScoreDisplay();
+            updateTeamDisplay(); // Keep showing final HP states
+        } Record! ${Math.floor(gameState.totalDamage).toLocaleString()} damage!`);
+            }
+            
+            updateBestScoreDisplay();
         }
 
         function resetBoss() {
@@ -1020,11 +1218,15 @@
             gameState.combat = false;
             gameState.timeLeft = 60;
             
+            // Reset hero states
+            teamHeroStates = [];
+            
             document.getElementById('resetBoss').style.display = 'none';
             document.getElementById('startCombat').style.display = 'inline-block';
             document.getElementById('timer').style.display = 'none';
             
             updateCombatDisplay();
+            updateTeamDisplay(); // Update to hide HP bars
         }
 
         function updateBestScoreDisplay() {
