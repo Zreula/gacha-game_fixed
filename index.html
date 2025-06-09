@@ -576,6 +576,7 @@
             padding: 12px;
             position: relative;
             transition: all 0.2s ease;
+            min-height: 180px; /* Augmenté pour plus d'infos */
         }
 
         .team-status-card.dead {
@@ -601,6 +602,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            margin-bottom: 8px;
         }
 
         .status-hp-text {
@@ -633,6 +635,60 @@
             color: #dc2626;
             font-size: 1.4em;
             font-weight: bold;
+        }
+
+        /* NOUVEAUX STYLES pour les infos de compétences dans la section status */
+        .skill-info {
+            margin-bottom: 8px;
+            padding: 6px;
+            background: rgba(42, 42, 62, 0.6);
+            border-radius: 4px;
+            border: 1px solid #4a4a6a;
+        }
+
+        .skill-info-name {
+            font-size: 0.75em;
+            color: #6366f1;
+            margin-bottom: 3px;
+            font-weight: 600;
+        }
+
+        .effective-stats {
+            font-size: 0.8em;
+            margin-bottom: 6px;
+            color: #e8e8e8;
+        }
+
+        .buffed-stat {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .base-stat {
+            color: #6b7280;
+            font-size: 0.9em;
+        }
+
+        .active-effects {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            margin-bottom: 6px;
+        }
+
+        .effect-badge {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            padding: 2px 5px;
+            border-radius: 10px;
+            font-size: 0.65em;
+            color: #e8e8e8;
+            font-weight: 500;
+        }
+
+        .effect-badge.debuff {
+            background: rgba(220, 38, 38, 0.2);
+            border-color: #dc2626;
         }
 
         /* NOUVEAUX STYLES POUR LE SYSTÈME DE COMPÉTENCES */
@@ -1477,33 +1533,8 @@
                     slot.className = 'team-slot filled';
                     
                     if (gameState.combat) {
-                        // NOUVEAU: Affichage des compétences en combat (automatiques)
-                        const skill = skills[hero.special];
-                        const effectiveStats = SkillSystem.getHeroEffectiveStats(hero, heroState);
-                        
-                        const statusEffectsHtml = heroState.effects && heroState.effects.length > 0 
-                            ? `<div class="status-effects">
-                                ${heroState.effects.map(effect => 
-                                    `<div class="status-effect buff">${effect.name} (${effect.duration})</div>`
-                                ).join('')}
-                               </div>`
-                            : '';
-                        
+                        // Affichage simplifié en combat (infos de base seulement)
                         const deathOverlay = !heroState.alive ? '<div class="death-overlay">💀 DEAD</div>' : '';
-                        
-                        // Indicateur de statut de compétence
-                        let skillStatus = '';
-                        if (heroState.skillCooldown > 0) {
-                            skillStatus = `<div class="skill-bar">
-                                <div class="skill-name">${skill.name}</div>
-                                <div class="skill-status cooldown">Cooldown: ${heroState.skillCooldown}</div>
-                            </div>`;
-                        } else {
-                            skillStatus = `<div class="skill-bar">
-                                <div class="skill-name">${skill.name}</div>
-                                <div class="skill-status ready">✅ Ready</div>
-                            </div>`;
-                        }
                         
                         slot.innerHTML = `
                             <div class="slot-hero-name">${getRoleIcon(hero.role)} ${hero.name}</div>
@@ -1514,8 +1545,6 @@
                                     <div class="hp-fill" style="width: ${(heroState.currentHp / heroState.maxHp) * 100}%"></div>
                                 </div>
                             </div>
-                            ${skillStatus}
-                            ${statusEffectsHtml}
                             ${deathOverlay}
                         `;
                     } else {
@@ -1749,6 +1778,35 @@
             
             const hpPercentage = (gameState.bossHp / gameState.maxBossHp) * 100;
             document.getElementById('hpFill').style.width = `${hpPercentage}%`;
+            
+            // NOUVEAU: Afficher les effets du boss
+            updateBossEffectsDisplay();
+        }
+        
+        // NOUVEAU: Fonction pour afficher les effets actifs sur le boss
+        function updateBossEffectsDisplay() {
+            let bossEffectsContainer = document.getElementById('bossEffectsContainer');
+            
+            // Créer le conteneur s'il n'existe pas
+            if (!bossEffectsContainer) {
+                bossEffectsContainer = document.createElement('div');
+                bossEffectsContainer.id = 'bossEffectsContainer';
+                bossEffectsContainer.style.marginTop = '8px';
+                document.querySelector('.boss-display').appendChild(bossEffectsContainer);
+            }
+            
+            // Afficher les effets actifs
+            if (gameState.bossEffects && gameState.bossEffects.length > 0) {
+                bossEffectsContainer.innerHTML = `
+                    <div style="display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">
+                        ${gameState.bossEffects.map(effect => 
+                            `<div class="effect-badge debuff">${effect.name} (${effect.duration})</div>`
+                        ).join('')}
+                    </div>
+                `;
+            } else {
+                bossEffectsContainer.innerHTML = '';
+            }
         }
 
         function updateTeamStatusSection() {
@@ -1760,11 +1818,54 @@
             selectedTeam.forEach((heroIndex, i) => {
                 const hero = heroes[heroIndex];
                 const heroState = teamHeroStates[i];
+                const skill = skills[hero.special];
+                const effectiveStats = SkillSystem.getHeroEffectiveStats(hero, heroState);
                 
                 const card = document.createElement('div');
                 card.className = `team-status-card ${!heroState.alive ? 'dead' : ''}`;
                 
                 const deathIndicator = !heroState.alive ? '<div class="status-death-indicator">💀</div>' : '';
+                
+                // Statut de la compétence
+                let skillStatusHtml = '';
+                if (heroState.skillCooldown > 0) {
+                    skillStatusHtml = `
+                        <div class="skill-info">
+                            <div class="skill-info-name">${skill.name}</div>
+                            <div class="skill-status cooldown">Cooldown: ${heroState.skillCooldown}</div>
+                        </div>
+                    `;
+                } else {
+                    skillStatusHtml = `
+                        <div class="skill-info">
+                            <div class="skill-info-name">${skill.name}</div>
+                            <div class="skill-status ready">✅ Ready</div>
+                        </div>
+                    `;
+                }
+                
+                // Effets actifs
+                let effectsHtml = '';
+                if (heroState.effects && heroState.effects.length > 0) {
+                    effectsHtml = `
+                        <div class="active-effects">
+                            ${heroState.effects.map(effect => 
+                                `<div class="effect-badge buff">${effect.name} (${effect.duration})</div>`
+                            ).join('')}
+                        </div>
+                    `;
+                }
+                
+                // Stats effectives (avec buffs)
+                let statsDisplay = '';
+                if (effectiveStats.attack !== hero.attack) {
+                    statsDisplay = `
+                        <div class="effective-stats">
+                            ATK: <span class="buffed-stat">${effectiveStats.attack}</span> 
+                            <span class="base-stat">(${hero.attack})</span>
+                        </div>
+                    `;
+                }
                 
                 card.innerHTML = `
                     <div class="status-hero-name">${getRoleIcon(hero.role)} ${hero.name}</div>
@@ -1775,6 +1876,9 @@
                             <div class="status-hp-fill" style="width: ${(heroState.currentHp / heroState.maxHp) * 100}%"></div>
                         </div>
                     </div>
+                    ${skillStatusHtml}
+                    ${statsDisplay}
+                    ${effectsHtml}
                     ${deathIndicator}
                 `;
                 
