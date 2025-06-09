@@ -222,7 +222,7 @@
             border: 2px dashed #4a4a6a;
             border-radius: 8px;
             padding: 16px;
-            min-height: 120px;
+            min-height: 160px; /* Augmenté pour les compétences */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -236,6 +236,7 @@
             border: 2px solid #10b981;
             background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
             border-style: solid;
+            align-items: stretch;
         }
 
         .team-slot.empty {
@@ -633,6 +634,173 @@
             font-size: 1.4em;
             font-weight: bold;
         }
+
+        /* NOUVEAUX STYLES POUR LE SYSTÈME DE COMPÉTENCES */
+        .skill-bar {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(42, 42, 62, 0.8);
+            border-radius: 6px;
+            border: 1px solid #4a4a6a;
+        }
+
+        .skill-button {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75em;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .skill-button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .skill-button:disabled {
+            background: #374151;
+            color: #6b7280;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .skill-button.on-cooldown {
+            background: #dc2626;
+            position: relative;
+        }
+
+        .skill-cooldown-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            transition: width 0.1s linear;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7em;
+            font-weight: bold;
+        }
+
+        .skill-name {
+            font-size: 0.7em;
+            color: #a0a0a0;
+            margin-bottom: 4px;
+        }
+
+        .status-effects {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .status-effect {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid #6366f1;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            color: #e8e8e8;
+        }
+
+        .status-effect.buff {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+        }
+
+        .status-effect.debuff {
+            background: rgba(220, 38, 38, 0.2);
+            border-color: #dc2626;
+        }
+
+        .floating-skill-text {
+            position: absolute;
+            color: #6366f1;
+            font-weight: bold;
+            font-size: 0.9em;
+            pointer-events: none;
+            animation: floatUpSkill 2s ease-out forwards;
+        }
+
+        @keyframes floatUpSkill {
+            from {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1.1);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-40px) scale(0.9);
+            }
+        }
+
+        .skill-tooltip {
+            position: absolute;
+            background: rgba(30, 30, 46, 0.95);
+            border: 1px solid #6366f1;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 0.8em;
+            max-width: 200px;
+            z-index: 1000;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .skill-tooltip-title {
+            color: #6366f1;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .skill-tooltip-desc {
+            color: #e8e8e8;
+            margin-bottom: 4px;
+        }
+
+        .skill-tooltip-cooldown {
+            color: #a0a0a0;
+            font-size: 0.9em;
+        }
+
+        .hero-skill-preview {
+            font-size: 0.8em;
+            color: #6366f1;
+            margin-bottom: 8px;
+        }
+
+        .skill-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .skill-status.ready {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+
+        .skill-status.cooldown {
+            background: rgba(220, 38, 38, 0.2);
+            color: #dc2626;
+            border: 1px solid #dc2626;
+        }
     </style>
 </head>
 <body>
@@ -783,7 +951,77 @@
     </div>
 
     <script>
-        // Hero data
+        // NOUVEAU: Définition des compétences
+        const skills = {
+            "Berserker Rage": {
+                name: "🔥 Berserker Rage",
+                description: "Augmente l'attaque de 50% pendant 3 tours",
+                cooldown: 5,
+                type: "self_buff",
+                effect: (hero, heroState) => ({
+                    type: "buff",
+                    name: "Rage",
+                    duration: 3,
+                    effect: { attack: 1.5 }
+                })
+            },
+            "Beast Mastery": {
+                name: "🐺 Beast Mastery", 
+                description: "Invoque une attaque de familier (dégâts bonus)",
+                cooldown: 3,
+                type: "damage",
+                effect: (hero, heroState) => ({
+                    damage: hero.attack * 0.8,
+                    message: "🐺 Attaque de familier!"
+                })
+            },
+            "Arcane Blast": {
+                name: "⚡ Arcane Blast",
+                description: "Puissante attaque magique (150% ATK)",
+                cooldown: 4,
+                type: "damage",
+                effect: (hero, heroState) => ({
+                    damage: hero.attack * 1.5,
+                    message: "⚡ Explosion arcanique!"
+                })
+            },
+            "Divine Shield": {
+                name: "🛡️ Divine Shield",
+                description: "Protège contre les 2 prochaines attaques",
+                cooldown: 6,
+                type: "self_buff",
+                effect: (hero, heroState) => ({
+                    type: "buff",
+                    name: "Shield",
+                    duration: 2,
+                    effect: { immunity: true }
+                })
+            },
+            "Divine Healing": {
+                name: "✨ Divine Healing",
+                description: "Soigne toute l'équipe (30% HP max)",
+                cooldown: 4,
+                type: "team_heal",
+                effect: (hero, heroState) => ({
+                    healAmount: 0.3,
+                    message: "✨ Lumière curative!"
+                })
+            },
+            "Shadow Magic": {
+                name: "🌑 Shadow Magic",
+                description: "Applique poison (20 dégâts/tour pendant 4 tours)",
+                cooldown: 5,
+                type: "debuff",
+                effect: (hero, heroState) => ({
+                    type: "debuff",
+                    name: "Poison",
+                    duration: 4,
+                    effect: { poison: 20 }
+                })
+            }
+        };
+
+        // Hero data (VOTRE CODE ORIGINAL COMPLET)
         const heroes = [
             { name: "Thorak Ironbane", role: "Warrior", attack: 150, speed: 80, crit: 15, hp: 800, def: 45, special: "Berserker Rage" },
             { name: "Sylvanna Swiftarrow", role: "Hunter", attack: 120, speed: 120, crit: 25, hp: 650, def: 30, special: "Beast Mastery" },
@@ -807,7 +1045,7 @@
             { name: "Gorath Ironwall", role: "Paladin", attack: 120, speed: 60, crit: 18, hp: 920, def: 58, special: "Divine Shield" }
         ];
 
-        // Game variables
+        // Game variables (VOTRE CODE ORIGINAL)
         let selectedTeam = [];
         let filteredHeroes = [...heroes];
         let teamHeroStates = [];
@@ -819,10 +1057,12 @@
             maxBossHp: 1000000,
             bestScore: 0,
             bestTeam: [],
-            bossAttack: 180
+            bossAttack: 180,
+            bossEffects: [], // NOUVEAU pour les effets du boss
+            turn: 0 // NOUVEAU pour le système de tours
         };
 
-        // Synergies
+        // Synergies (VOTRE CODE ORIGINAL)
         const synergies = {
             "Warrior's Might": { roles: ["Warrior"], minCount: 3, bonus: "ATK +20%" },
             "Hunter's Mark": { roles: ["Hunter"], minCount: 2, bonus: "CRIT +10%" },
@@ -833,7 +1073,196 @@
             "Balanced Party": { roles: ["Warrior", "Hunter", "Mage", "Warlock", "Paladin", "Priest"], minCount: 5, bonus: "All Stats +10%" }
         };
 
-        // Initialization
+        // NOUVEAU: Système de compétences
+        class SkillSystem {
+            static useSkill(heroIndex, slotIndex) {
+                if (!gameState.combat) return;
+                
+                const hero = heroes[heroIndex];
+                const heroState = teamHeroStates[slotIndex];
+                const skill = skills[hero.special];
+                
+                if (!heroState.alive || heroState.skillCooldown > 0) return;
+                
+                // Appliquer l'effet de la compétence
+                const result = skill.effect(hero, heroState);
+                
+                switch(skill.type) {
+                    case "damage":
+                        gameState.totalDamage += result.damage;
+                        gameState.bossHp = Math.max(0, gameState.bossHp - result.damage);
+                        this.showFloatingSkillText(slotIndex, result.message);
+                        break;
+                        
+                    case "self_buff":
+                        if (!heroState.effects) heroState.effects = [];
+                        heroState.effects.push(result);
+                        this.showFloatingSkillText(slotIndex, `${skill.name} auto-activé!`);
+                        break;
+                        
+                    case "team_heal":
+                        teamHeroStates.forEach(state => {
+                            if (state.alive) {
+                                const healAmount = Math.floor(state.maxHp * result.healAmount);
+                                state.currentHp = Math.min(state.maxHp, state.currentHp + healAmount);
+                            }
+                        });
+                        this.showFloatingSkillText(slotIndex, `${result.message} (Auto)`);
+                        break;
+                        
+                    case "debuff":
+                        if (!gameState.bossEffects) gameState.bossEffects = [];
+                        gameState.bossEffects.push(result);
+                        this.showFloatingSkillText(slotIndex, `${skill.name} auto-appliqué!`);
+                        break;
+                }
+                
+                // Mettre en cooldown
+                heroState.skillCooldown = skill.cooldown;
+                
+                updateCombatDisplay();
+                updateTeamDisplay();
+                updateTeamStatusSection();
+            }
+            
+            static processEffects() {
+                // Traiter les effets des héros
+                teamHeroStates.forEach(state => {
+                    if (!state.effects) state.effects = []; // S'assurer que effects existe
+                    
+                    state.effects = state.effects.filter(effect => {
+                        effect.duration--;
+                        return effect.duration > 0;
+                    });
+                });
+                
+                // Traiter les effets du boss (poison, etc.)
+                if (!gameState.bossEffects) gameState.bossEffects = []; // S'assurer que bossEffects existe
+                
+                gameState.bossEffects.forEach(effect => {
+                    if (effect.type === "debuff" && effect.effect && effect.effect.poison) {
+                        const poisonDamage = effect.effect.poison;
+                        gameState.bossHp = Math.max(0, gameState.bossHp - poisonDamage);
+                        gameState.totalDamage += poisonDamage;
+                        
+                        // Afficher les dégâts de poison
+                        const bossInfo = document.querySelector('.boss-display');
+                        const floatingDamage = document.createElement('div');
+                        floatingDamage.className = 'floating-damage';
+                        floatingDamage.textContent = `🌑 -${poisonDamage}`;
+                        floatingDamage.style.left = `${Math.random() * 200 + 50}px`;
+                        floatingDamage.style.top = '50px';
+                        floatingDamage.style.color = '#9333ea';
+                        
+                        bossInfo.style.position = 'relative';
+                        bossInfo.appendChild(floatingDamage);
+                        
+                        setTimeout(() => {
+                            floatingDamage.remove();
+                        }, 1000);
+                    }
+                    effect.duration--;
+                });
+                
+                gameState.bossEffects = gameState.bossEffects.filter(effect => effect.duration > 0);
+                
+                // Réduire les cooldowns
+                teamHeroStates.forEach(state => {
+                    if (state.skillCooldown > 0) {
+                        state.skillCooldown--;
+                    }
+                });
+            }
+            
+            // NOUVEAU: IA pour utiliser automatiquement les compétences
+            static processAutoSkills() {
+                selectedTeam.forEach((heroIndex, slotIndex) => {
+                    const hero = heroes[heroIndex];
+                    const heroState = teamHeroStates[slotIndex];
+                    const skill = skills[hero.special];
+                    
+                    if (!heroState.alive || heroState.skillCooldown > 0) return;
+                    
+                    let shouldUseSkill = false;
+                    
+                    // Logique spécifique par type de compétence
+                    switch(skill.type) {
+                        case "team_heal":
+                            // Soigner si quelqu'un a moins de 40% HP
+                            const injuredHeroes = teamHeroStates.filter(state => 
+                                state.alive && (state.currentHp / state.maxHp) < 0.4
+                            );
+                            shouldUseSkill = injuredHeroes.length > 0;
+                            break;
+                            
+                        case "self_buff":
+                            // Utiliser les buffs si pas déjà actifs et en combat depuis au moins 3 tours
+                            const hasActiveBuff = heroState.effects && heroState.effects.some(effect => 
+                                effect.name === "Rage" || effect.name === "Shield"
+                            );
+                            shouldUseSkill = !hasActiveBuff && gameState.turn >= 3;
+                            break;
+                            
+                        case "damage":
+                            // Utiliser les attaques spéciales toutes les 4-6 attaques environ
+                            shouldUseSkill = Math.random() < 0.3 && gameState.turn >= 2;
+                            break;
+                            
+                        case "debuff":
+                            // Utiliser les debuffs si le boss n'en a pas déjà
+                            const hasPoison = gameState.bossEffects && gameState.bossEffects.some(effect => 
+                                effect.name === "Poison"
+                            );
+                            shouldUseSkill = !hasPoison && Math.random() < 0.4;
+                            break;
+                    }
+                    
+                    if (shouldUseSkill) {
+                        this.useSkill(heroIndex, slotIndex);
+                    }
+                });
+            }
+            
+            static showFloatingSkillText(slotIndex, text) {
+                const slot = document.getElementById(`slot-${slotIndex}`);
+                if (!slot) return;
+                
+                const floatingText = document.createElement('div');
+                floatingText.className = 'floating-skill-text';
+                floatingText.textContent = text;
+                floatingText.style.left = '50%';
+                floatingText.style.top = '30%';
+                floatingText.style.transform = 'translateX(-50%)';
+                
+                slot.style.position = 'relative';
+                slot.appendChild(floatingText);
+                
+                setTimeout(() => {
+                    floatingText.remove();
+                }, 2000);
+            }
+            
+            static getHeroEffectiveStats(hero, heroState) {
+                let stats = { ...hero };
+                
+                if (!heroState.effects || heroState.effects.length === 0) return stats;
+                
+                heroState.effects.forEach(effect => {
+                    if (effect.effect && effect.effect.attack) {
+                        stats.attack = Math.floor(stats.attack * effect.effect.attack);
+                    }
+                });
+                
+                return stats;
+            }
+            
+            static hasImmunity(heroState) {
+                if (!heroState.effects || heroState.effects.length === 0) return false;
+                return heroState.effects.some(effect => effect.effect && effect.effect.immunity);
+            }
+        }
+
+        // Initialization (VOTRE CODE ORIGINAL)
         function init() {
             applyFilters();
             renderTeamSlots();
@@ -922,9 +1351,13 @@
                     heroCard.classList.add('disabled');
                 }
                 
+                // NOUVEAU: Affichage de la compétence dans la carte héros
+                const skill = skills[hero.special];
+                
                 heroCard.innerHTML = `
                     <div class="hero-name">${hero.name}</div>
                     <div class="hero-class">${getRoleIcon(hero.role)} ${hero.role}</div>
+                    <div class="hero-skill-preview">🎯 ${skill.name}</div>
                     <div class="hero-stats">
                         <div class="stat-row">
                             <span class="stat-label">ATK:</span>
@@ -949,11 +1382,41 @@
                     </div>
                 `;
                 
+                // NOUVEAU: Tooltip pour les compétences
+                heroCard.addEventListener('mouseenter', (e) => createSkillTooltip(e, skill));
+                heroCard.addEventListener('mouseleave', removeTooltip);
+                
                 grid.appendChild(heroCard);
             });
             
             const heroesSection = document.querySelector('.heroes-panel .panel-title');
             heroesSection.textContent = `Available Champions (${filteredHeroes.length}/${heroes.length})`;
+        }
+
+        // NOUVEAU: Création des tooltips
+        function createSkillTooltip(event, skill) {
+            removeTooltip();
+            
+            const tooltip = document.createElement('div');
+            tooltip.className = 'skill-tooltip';
+            tooltip.id = 'skill-tooltip';
+            
+            tooltip.innerHTML = `
+                <div class="skill-tooltip-title">${skill.name}</div>
+                <div class="skill-tooltip-desc">${skill.description}</div>
+                <div class="skill-tooltip-cooldown">Cooldown: ${skill.cooldown} tours</div>
+            `;
+            
+            document.body.appendChild(tooltip);
+            
+            const rect = event.target.getBoundingClientRect();
+            tooltip.style.left = rect.left + 'px';
+            tooltip.style.top = (rect.top - tooltip.offsetHeight - 10) + 'px';
+        }
+
+        function removeTooltip() {
+            const tooltips = document.querySelectorAll('#skill-tooltip');
+            tooltips.forEach(tooltip => tooltip.remove());
         }
 
         function getRoleIcon(role) {
@@ -1003,12 +1466,45 @@
                 
                 if (i < selectedTeam.length) {
                     const hero = heroes[selectedTeam[i]];
-                    const heroState = teamHeroStates[i] || { currentHp: hero.hp, maxHp: hero.hp, alive: true };
+                    const heroState = teamHeroStates[i] || { 
+                        currentHp: hero.hp, 
+                        maxHp: hero.hp, 
+                        alive: true,
+                        skillCooldown: 0, // NOUVEAU
+                        effects: [] // NOUVEAU
+                    };
                     
                     slot.className = 'team-slot filled';
                     
                     if (gameState.combat) {
+                        // NOUVEAU: Affichage des compétences en combat (automatiques)
+                        const skill = skills[hero.special];
+                        const effectiveStats = SkillSystem.getHeroEffectiveStats(hero, heroState);
+                        
+                        const statusEffectsHtml = heroState.effects && heroState.effects.length > 0 
+                            ? `<div class="status-effects">
+                                ${heroState.effects.map(effect => 
+                                    `<div class="status-effect buff">${effect.name} (${effect.duration})</div>`
+                                ).join('')}
+                               </div>`
+                            : '';
+                        
                         const deathOverlay = !heroState.alive ? '<div class="death-overlay">💀 DEAD</div>' : '';
+                        
+                        // Indicateur de statut de compétence
+                        let skillStatus = '';
+                        if (heroState.skillCooldown > 0) {
+                            skillStatus = `<div class="skill-bar">
+                                <div class="skill-name">${skill.name}</div>
+                                <div class="skill-status cooldown">Cooldown: ${heroState.skillCooldown}</div>
+                            </div>`;
+                        } else {
+                            skillStatus = `<div class="skill-bar">
+                                <div class="skill-name">${skill.name}</div>
+                                <div class="skill-status ready">✅ Ready</div>
+                            </div>`;
+                        }
+                        
                         slot.innerHTML = `
                             <div class="slot-hero-name">${getRoleIcon(hero.role)} ${hero.name}</div>
                             <div class="slot-hero-class">${hero.role}</div>
@@ -1018,6 +1514,8 @@
                                     <div class="hp-fill" style="width: ${(heroState.currentHp / heroState.maxHp) * 100}%"></div>
                                 </div>
                             </div>
+                            ${skillStatus}
+                            ${statusEffectsHtml}
                             ${deathOverlay}
                         `;
                     } else {
@@ -1086,13 +1584,17 @@
             gameState.combat = true;
             gameState.timeLeft = 60;
             gameState.totalDamage = 0;
+            gameState.turn = 0;
+            gameState.bossEffects = []; // Initialiser les effets du boss
             
             teamHeroStates = selectedTeam.map(heroIndex => {
                 const hero = heroes[heroIndex];
                 return {
                     currentHp: hero.hp,
                     maxHp: hero.hp,
-                    alive: true
+                    alive: true,
+                    skillCooldown: 0, // NOUVEAU
+                    effects: [] // NOUVEAU
                 };
             });
             
@@ -1119,12 +1621,19 @@
                 return;
             }
             
+            // NOUVEAU: Traiter les effets de début de tour
+            SkillSystem.processEffects();
+            
+            // NOUVEAU: IA pour utiliser automatiquement les compétences
+            SkillSystem.processAutoSkills();
+            
             let teamDamage = 0;
             selectedTeam.forEach((heroIndex, i) => {
                 if (!teamHeroStates[i].alive) return;
                 
                 const hero = heroes[heroIndex];
-                let damage = hero.attack;
+                const effectiveStats = SkillSystem.getHeroEffectiveStats(hero, teamHeroStates[i]); // NOUVEAU
+                let damage = effectiveStats.attack;
                 
                 if (Math.random() * 100 < hero.crit) {
                     damage *= 2;
@@ -1150,6 +1659,7 @@
             showFloatingDamage(teamDamage);
             
             gameState.timeLeft -= 1;
+            gameState.turn++; // NOUVEAU
             setTimeout(combatLoop, 1000);
         }
 
@@ -1164,6 +1674,22 @@
             const targetIndex = aliveHeroIndices[Math.floor(Math.random() * aliveHeroIndices.length)];
             const targetHero = heroes[selectedTeam[targetIndex]];
             const targetState = teamHeroStates[targetIndex];
+            
+            // NOUVEAU: Vérifier l'immunité
+            if (SkillSystem.hasImmunity(targetState)) {
+                showFloatingBossDamage(targetIndex, "IMMUNE!");
+                // Retirer une charge d'immunité
+                if (targetState.effects) {
+                    targetState.effects.forEach(effect => {
+                        if (effect.effect && effect.effect.immunity && effect.duration > 0) {
+                            effect.duration--;
+                        }
+                    });
+                    // Nettoyer les effets expirés
+                    targetState.effects = targetState.effects.filter(effect => effect.duration > 0);
+                }
+                return;
+            }
             
             let bossDamage = gameState.bossAttack;
             const damageReduction = targetHero.def * 0.5;
@@ -1200,7 +1726,7 @@
             
             const floatingDamage = document.createElement('div');
             floatingDamage.className = 'floating-boss-damage';
-            floatingDamage.textContent = `-${damage}`;
+            floatingDamage.textContent = typeof damage === 'string' ? damage : `-${damage}`;
             floatingDamage.style.left = `${Math.random() * 50 + 25}%`;
             floatingDamage.style.top = '20%';
             
@@ -1279,6 +1805,7 @@
             gameState.totalDamage = 0;
             gameState.combat = false;
             gameState.timeLeft = 60;
+            gameState.bossEffects = []; // NOUVEAU
             
             teamHeroStates = [];
             
