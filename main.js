@@ -25,7 +25,7 @@ let gameState = {
     // Nouveau: Inventory system
     inventory: {
         items: [],
-        
+
         maxSlots: 100,
         currentFilter: "all" // Filtre actuel pour l'inventaire (tous, ressources, équipements, consommables)
     }
@@ -455,7 +455,6 @@ function completeMission(mission) {
         progressElement.remove();
     }
     
-    // ... rest of the function stays the same
     // Simulate mission combat
     const missionResults = simulateDetailedMission(mission);
     
@@ -465,7 +464,15 @@ function completeMission(mission) {
         addPlayerXP(mission.xpReward);
         
         const currentMapData = worldMaps[gameState.currentMap];
-        currentMapData.knowledge = Math.min(100, currentMapData.knowledge + mission.knowledgeReward);
+        currentMapData.knowledge = Math.min(currentMapData.maxKnowledge, currentMapData.knowledge + mission.knowledgeReward);
+        
+        // NOUVEAU: Calculer et ajouter les loots
+        const missionLoot = calculateMissionLoot(gameState.currentMap, mission.id, true);
+        const lootResult = addLootToInventory(missionLoot);
+        
+        // Stocker les loots pour l'affichage dans la modal
+        missionResults.lootReceived = lootResult.addedItems;
+        missionResults.lootFailed = lootResult.failedItems;
         
         // Add XP to heroes
         gameState.selectedTeam.forEach(heroIndex => {
@@ -483,7 +490,21 @@ function completeMission(mission) {
         
         // Check for new mission unlocks
         unlockNewMissions();
+        
+        // Check for new map unlocks
         checkMapUnlocks();
+    } else {
+        // NOUVEAU: Loots réduits même en cas d'échec
+        const missionLoot = calculateMissionLoot(gameState.currentMap, mission.id, false);
+        const lootResult = addLootToInventory(missionLoot);
+        
+        // Stocker les loots pour l'affichage
+        missionResults.lootReceived = lootResult.addedItems;
+        missionResults.lootFailed = lootResult.failedItems;
+        
+        // Petites récompenses de consolation
+        gameState.gold += Math.floor(mission.goldReward * 0.2);
+        addPlayerXP(Math.floor(mission.xpReward * 0.3));
     }
     
     // Show results modal
@@ -493,6 +514,7 @@ function completeMission(mission) {
     updatePlayerUI();
     updateWorldMapTab();
 }
+
 
 function simulateDetailedMission(mission) {
     // Calculate party strength
@@ -617,6 +639,31 @@ function showMissionResults(mission, results) {
 }
 
 function generateSuccessContent(mission, results) {
+    // Section loots
+    const lootSection = results.lootReceived && results.lootReceived.length > 0 ? `
+        <div class="result-section">
+            <div class="section-header">📦 Items Obtained</div>
+            ${results.lootReceived.map(loot => `
+                <div class="reward-item">
+                    <span class="reward-label">${getItemTypeIcon(itemDatabase[loot.itemId]?.type)} ${loot.name}:</span>
+                    <span class="reward-value">+${loot.quantity}</span>
+                </div>
+            `).join('')}
+            ${results.lootFailed && results.lootFailed.length > 0 ? `
+                <div style="color: #dc2626; font-size: 0.85em; margin-top: 8px;">
+                    ⚠️ Inventory full: ${formatLootDisplay(results.lootFailed)} not added
+                </div>
+            ` : ''}
+        </div>
+    ` : `
+        <div class="result-section">
+            <div class="section-header">📦 Items Obtained</div>
+            <div class="reward-item">
+                <span class="reward-label" style="color: #6b7280;">No items obtained this time</span>
+            </div>
+        </div>
+    `;
+
     return `
         <div class="result-section">
             <div class="section-header">⏱️ Mission Info</div>
@@ -649,10 +696,28 @@ function generateSuccessContent(mission, results) {
                 <span class="reward-value">+${mission.knowledgeReward}%</span>
             </div>
         </div>
+        
+        ${lootSection}
     `;
 }
 
 function generateFailureContent(mission, results) {
+    // Section loots (même en cas d'échec)
+    const lootSection = results.lootReceived && results.lootReceived.length > 0 ? `
+        <div class="result-section">
+            <div class="section-header">📦 Items Salvaged</div>
+            ${results.lootReceived.map(loot => `
+                <div class="reward-item">
+                    <span class="reward-label">${getItemTypeIcon(itemDatabase[loot.itemId]?.type)} ${loot.name}:</span>
+                    <span class="reward-value">+${loot.quantity}</span>
+                </div>
+            `).join('')}
+            <div style="color: #f59e0b; font-size: 0.85em; margin-top: 8px;">
+                💔 Reduced loot due to mission failure
+            </div>
+        </div>
+    ` : '';
+
     return `
         <div class="result-section">
             <div class="section-header">💀 Mission Failed</div>
@@ -680,6 +745,8 @@ function generateFailureContent(mission, results) {
                 <span class="reward-value">+${Math.floor(mission.xpReward * 0.3)}</span>
             </div>
         </div>
+        
+        ${lootSection}
     `;
 }
 
