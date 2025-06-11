@@ -430,7 +430,7 @@ function generateMissionCards() {
                 </div>
                 <p>${mission.description}</p>
                 <p><strong>Difficulty:</strong> ${mission.difficulty}</p>
-                <p><strong>Rewards:</strong> ${mission.goldReward}💰 ${mission.xpReward}⭐ ${mission.knowledgeReward}%📖</p>
+                <p><strong>Rewards:</strong> ${mission.goldReward}💰 ${mission.xpReward}⭐ ${mission.knowledgeReward}📖</p>
                 ${canStart ? `<button class="btn" onclick="startMission(${mission.id})">Start Mission</button>` : ''}
                 ${gameState.selectedTeam.length === 0 ? '<p style="color: #dc2626;">⚠️ No party selected</p>' : ''}
             </div>
@@ -662,7 +662,7 @@ function simulateDetailedMission(mission) {
         const enemyDamage = {
             "Easy": 50 + Math.random() * 100,
             "Medium": 100 + Math.random() * 150,
-            "Hard": 150 + Math.random() * 200
+            "Hard": 200 + Math.random() * 200
         };
         const damageTaken = Math.floor((enemyDamage[mission.difficulty] || 100) * (success ? 0.7 : 1.2));
         
@@ -683,9 +683,9 @@ function simulateDetailedMission(mission) {
     
     // Calculate mission duration (for display)
     const baseDuration = {
-        "Easy": 15,
-        "Medium": 30,
-        "Hard": 45
+        "Easy": 5,
+        "Medium": 15,
+        "Hard": 30
     };
     const actualDuration = baseDuration[mission.difficulty] + Math.floor(Math.random() * 10 - 5); // ±5 seconds variance
     
