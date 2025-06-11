@@ -53,7 +53,7 @@ function getInventoryItemsFiltered(filter = "all") {
         .sort((a, b) => {
             // Sort by type first, then by name
             if (a.type !== b.type) {
-                const typeOrder = { "equipment": 0, "consumable": 1, "resource": 2 };
+                const typeOrder = { "equipment": 0, "consumable": 1, "ressource": 2 };
                 return typeOrder[a.type] - typeOrder[b.type];
             }
             return a.name.localeCompare(b.name);
@@ -111,7 +111,7 @@ function generateInventoryFilters() {
         { id: "all", name: "All Items", icon: "📦" },
         { id: "equipment", name: "Equipment", icon: "⚔️" },
         { id: "consumable", name: "Consumables", icon: "🧪" },
-        { id: "resource", name: "Resources", icon: "🧵" }
+        { id: "ressource", name: "Ressources", icon: "🧵" }
     ];
     
     return `
@@ -163,7 +163,7 @@ function getItemTypeIcon(type) {
     const icons = {
         "equipment": "⚔️",
         "consumable": "🧪", 
-        "resource": "🧵"
+        "ressource": "🧵"
     };
     return icons[type] || "📦";
 }
