@@ -80,9 +80,9 @@ const worldMaps = [
                 description: "Clear out kobold camps threatening local farmers",
                 difficulty: "Easy",
                 knowledgeRequired: 0,
-                knowledgeReward: 15,
-                goldReward: 50,
-                xpReward: 25,
+                knowledgeReward: 3,
+                goldReward: 5,
+                xpReward: 10,
                 unlocked: true,
                 completed: false
             },
@@ -92,9 +92,9 @@ const worldMaps = [
                 description: "Thin out the aggressive wolf population",
                 difficulty: "Easy", 
                 knowledgeRequired: 0,
-                knowledgeReward: 10,
-                goldReward: 35,
-                xpReward: 20,
+                knowledgeReward: 5,
+                goldReward: 15,
+                xpReward: 15,
                 unlocked: true,
                 completed: false
             },
@@ -104,9 +104,9 @@ const worldMaps = [
                 description: "Raid the notorious Defias bandit camp south of Goldshire",
                 difficulty: "Medium",
                 knowledgeRequired: 25,
-                knowledgeReward: 20,
-                goldReward: 100,
-                xpReward: 50,
+                knowledgeReward: 6,
+                goldReward: 30,
+                xpReward: 25,
                 unlocked: false,
                 completed: false
             },
@@ -115,10 +115,10 @@ const worldMaps = [
                 name: "Murloc Investigation",
                 description: "Investigate strange murloc activity near Crystal Lake",
                 difficulty: "Medium",
-                knowledgeRequired: 40,
-                knowledgeReward: 15,
-                goldReward: 80,
-                xpReward: 45,
+                knowledgeRequired: 35,
+                knowledgeReward: 8,
+                goldReward: 40,
+                xpReward: 28,
                 unlocked: false,
                 completed: false
             },
@@ -127,10 +127,10 @@ const worldMaps = [
                 name: "Rare Herb Collection",
                 description: "Gather valuable Peacebloom and Silverleaf while defending against forest creatures",
                 difficulty: "Easy",
-                knowledgeRequired: 60,
-                knowledgeReward: 12,
-                goldReward: 60,
-                xpReward: 30,
+                knowledgeRequired: 43,
+                knowledgeReward: 3,
+                goldReward: 5,
+                xpReward: 3,
                 unlocked: false,
                 completed: false
             },
@@ -139,8 +139,8 @@ const worldMaps = [
                 name: "Elite: Hogger Hunt",
                 description: "Face the infamous gnoll leader terrorizing trade routes",
                 difficulty: "Hard",
-                knowledgeRequired: 75,
-                knowledgeReward: 25,
+                knowledgeRequired: 60,
+                knowledgeReward: 10,
                 goldReward: 200,
                 xpReward: 100,
                 unlocked: false,
@@ -152,9 +152,9 @@ const worldMaps = [
                 description: "Explore mysterious ruins discovered deep in the forest",
                 difficulty: "Hard",
                 knowledgeRequired: 90,
-                knowledgeReward: 20,
-                goldReward: 150,
-                xpReward: 80,
+                knowledgeReward: 5,
+                goldReward: 50,
+                xpReward: 30,
                 unlocked: false,
                 completed: false
             }
@@ -165,7 +165,7 @@ const worldMaps = [
         name: "Westfall",
         unlocked: false,
         knowledge: 0,
-        maxKnowledge: 100,
+        maxKnowledge: 160,
         missions: []
     }
 ];
@@ -178,7 +178,7 @@ let gameState = {
     playerXPToNext: 100,
     
     // Resources
-    gold: 100,
+    gold: 0,
     
     // Heroes
     unlockedHeroes: [0], // Only starter hero unlocked
