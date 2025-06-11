@@ -160,13 +160,195 @@ const worldMaps = [
             }
         ]
     },
-    {
-        id: 1,
-        name: "Westfall",
-        unlocked: false,
-        knowledge: 0,
-        maxKnowledge: 160,
-        missions: []
+        // Westfall Map Data
+        {
+            id: 1,
+            name: "Westfall",
+            unlocked: false,
+            knowledge: 0,
+            maxKnowledge: 200, // ← Change de 160 à 200
+            missions: [
+                {
+                    id: 0,
+                    name: "Stray Defias",
+                description: "Hunt down stray Defias scouts roaming the fields",
+                difficulty: "Easy",
+                knowledgeRequired: 0,
+                knowledgeReward: 4,
+                goldReward: 8,
+                xpReward: 12,
+                unlocked: true,
+                completed: false
+            },
+            {
+                id: 1,
+                name: "Wild Boar Problem",
+                description: "Thin out the aggressive boar population threatening crops",
+                difficulty: "Easy",
+                knowledgeRequired: 0,
+                knowledgeReward: 3,
+                goldReward: 6,
+                xpReward: 10,
+                unlocked: true,
+                completed: false
+            },
+            {
+                id: 2,
+                name: "Defias Scout Patrol",
+                description: "Eliminate Defias scouts gathering intelligence",
+                difficulty: "Medium",
+                knowledgeRequired: 15,
+                knowledgeReward: 5,
+                goldReward: 12,
+                xpReward: 18,
+                unlocked: false,
+                completed: false
+            },
+            {
+                id: 3,
+                name: "Abandoned Farmstead",
+                description: "Clear out the undead infesting the old Furlbrow farm",
+                difficulty: "Medium",
+                knowledgeRequired: 25,
+                knowledgeReward: 4,
+                goldReward: 15,
+                xpReward: 20,
+                unlocked: false,
+                completed: false
+            },
+            {
+                id: 4,
+                name: "Mine Entrance Patrol",
+                description: "Secure the entrance to the old Westfall mines",
+                difficulty: "Medium",
+                knowledgeRequired: 35,
+                knowledgeReward: 6,
+                goldReward: 18,
+                xpReward: 25,
+                unlocked: false,
+                completed: false
+            },
+            {
+                id: 5,
+                name: "Defias Encampment",
+                description: "Raid a small Defias camp hidden in the hills",
+                difficulty: "Medium",
+                knowledgeRequired: 50,
+                knowledgeReward: 5,
+                goldReward: 22,
+                xpReward: 28,
+                unlocked: false,
+                completed: false
+            },
+            {
+                id: 6,
+                name: "Harvest Watcher Hunt",
+                description: "Destroy the mechanical Harvest Watchers terrorizing farmers",
+                difficulty: "Hard",
+                knowledgeRequired: 65,
+                knowledgeReward: 4,
+                goldReward: 25,
+                xpReward: 30,
+                unlocked: false,
+                completed: false
+            },
+            {
+                id: 7,
+                name: "Murloc Coast Raid",
+                description: "Clear the murloc settlements along the western shore",
+                difficulty: "Medium",
+                knowledgeRequired: 80,
+                knowledgeReward: 3,
+                goldReward: 20,
+                xpReward: 22,
+                unlocked: false,
+                completed: false
+            },
+            {
+                id: 8,
+                name: "Defias Messenger",
+                description: "Intercept a Defias messenger carrying important documents",
+                difficulty: "Hard",
+                knowledgeRequired: 95,
+                knowledgeReward: 6,
+                goldReward: 35,
+                xpReward: 40,
+                unlocked: false,
+                completed: false
+            },
+            {
+                id: 9,
+                name: "Deep Mine Exploration",
+                description: "Venture deep into the mine shafts to clear out kobolds",
+                difficulty: "Hard",
+                knowledgeRequired: 110,
+                knowledgeReward: 4,
+                goldReward: 30,
+                xpReward: 35,
+                unlocked: false,
+                completed: false
+            },
+            {
+                id: 10,
+                name: "Defias Lieutenant",
+                description: "Eliminate a Defias Lieutenant planning raids on Stormwind",
+                difficulty: "Hard",
+                knowledgeRequired: 125,
+                knowledgeReward: 5,
+                goldReward: 45,
+                xpReward: 50,
+                unlocked: false,
+                completed: false
+            },
+            {
+                id: 11,
+                name: "The Jangolode Mine",
+                description: "Investigate strange activities in the deepest mine shaft",
+                difficulty: "Hard",
+                knowledgeRequired: 145,
+                knowledgeReward: 4,
+                goldReward: 40,
+                xpReward: 45,
+                unlocked: false,
+                completed: false
+            },
+            {
+                id: 12,
+                name: "Defias Captain Raid",
+                description: "Assault the main Defias stronghold and capture their captain",
+                difficulty: "Hard",
+                knowledgeRequired: 165,
+                knowledgeReward: 6,
+                goldReward: 60,
+                xpReward: 70,
+                unlocked: false,
+                completed: false
+            },
+            {
+                id: 13,
+                name: "Deadmines Entrance",
+                description: "Scout the entrance to the infamous Deadmines",
+                difficulty: "Hard",
+                knowledgeRequired: 180,
+                knowledgeReward: 3,
+                goldReward: 50,
+                xpReward: 60,
+                unlocked: false,
+                completed: false
+            },
+            {
+                id: 14,
+                name: "The Deadmines",
+                description: "Face Van Cleef and his Defias Brotherhood in their stronghold",
+                difficulty: "Very Hard",
+                knowledgeRequired: 195,
+                knowledgeReward: 5,
+                goldReward: 150,
+                xpReward: 200,
+                unlocked: false,
+                completed: false
+            }
+        ]
     }
 ];
 
@@ -189,15 +371,15 @@ let gameState = {
     unlockedMaps: [0],
     
     // UI state
-    currentTab: 'heroes'
+    currentTab: 'heroes',
 
     // Mission tracking
-   // missionInProgress: null, // Will store: { mission, startTime, duration, timer}
+    missionInProgress: null, // Will store: { mission, startTime, duration, timer}
 };
 
 // ===== CORE GAME FUNCTIONS =====
 
-// Initialize the game
+// Initialize the game 
 function initGame() {
     console.log("🎮 Initializing Infernal WoW...");
     
@@ -389,18 +571,42 @@ function updateWorldMapTab() {
     const worldmapTab = document.getElementById('worldmap-tab');
     const currentMapData = worldMaps[gameState.currentMap];
     
+    // Generate map selector if multiple maps are unlocked
+    const mapSelector = gameState.unlockedMaps.length > 1 ? `
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🗺️ Select Area</div>
+            </div>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                ${gameState.unlockedMaps.map(mapIndex => {
+                    const map = worldMaps[mapIndex];
+                    const isActive = mapIndex === gameState.currentMap;
+                    return `
+                        <button class="btn ${isActive ? '' : 'btn-secondary'}" 
+                                onclick="switchToMap(${mapIndex})"
+                                ${isActive ? 'disabled' : ''}>
+                            ${map.name} ${isActive ? '(Current)' : ''}
+                        </button>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    ` : '';
+    
     worldmapTab.innerHTML = `
         <div class="content-header">
             <h1>World Map - ${currentMapData.name}</h1>
         </div>
         <div class="content-section">
+            ${mapSelector}
+            
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">Map Knowledge</div>
                 </div>
                 <div class="progress-text">Knowledge: ${currentMapData.knowledge}/${currentMapData.maxKnowledge}%</div>
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: ${currentMapData.knowledge}%"></div>
+                    <div class="progress-fill" style="width: ${(currentMapData.knowledge/currentMapData.maxKnowledge)*100}%"></div>
                 </div>
             </div>
             
@@ -429,7 +635,6 @@ function generateMissionCards() {
                     <div class="card-title">⚔️ ${mission.name}</div>
                 </div>
                 <p>${mission.description}</p>
-                <p><strong>Difficulty:</strong> ${mission.difficulty}</p>
                 <p><strong>Rewards:</strong> ${mission.goldReward}💰 ${mission.xpReward}⭐ ${mission.knowledgeReward}📖</p>
                 ${canStart ? `<button class="btn" onclick="startMission(${mission.id})">Start Mission</button>` : ''}
                 ${gameState.selectedTeam.length === 0 ? '<p style="color: #dc2626;">⚠️ No party selected</p>' : ''}
@@ -485,7 +690,8 @@ function startMission(missionId) {
     const missionDurations = {
         "Easy": 5,    // 5 seconds
         "Medium": 15,  // 15 seconds  
-        "Hard": 30     // 30 seconds
+        "Hard": 30,     // 30 seconds
+        "Very Hard": 60 // 60 seconds
     };
     
     const duration = missionDurations[mission.difficulty] || 20;
@@ -622,6 +828,7 @@ function completeMission(mission) {
         
         // Check for new mission unlocks
         unlockNewMissions();
+        checkMapUnlocks();
     }
     
     // Show results modal
@@ -642,7 +849,8 @@ function simulateDetailedMission(mission) {
     const difficultyThreshold = {
         "Easy": 350,
         "Medium": 1000, 
-        "Hard": 2000
+        "Hard": 2000,
+        "Very Hard": 3000
     };
     
     const requiredStrength = difficultyThreshold[mission.difficulty] || 900;
@@ -662,7 +870,8 @@ function simulateDetailedMission(mission) {
         const enemyDamage = {
             "Easy": 50 + Math.random() * 100,
             "Medium": 100 + Math.random() * 150,
-            "Hard": 200 + Math.random() * 200
+            "Hard": 200 + Math.random() * 200,
+            "Very Hard": 300 + Math.random() * 300
         };
         const damageTaken = Math.floor((enemyDamage[mission.difficulty] || 100) * (success ? 0.7 : 1.2));
         
@@ -843,6 +1052,19 @@ function unlockNewMissions() {
         showMissionDiscoveryNotification(newMissionsUnlocked);
     }
 }
+function checkMapUnlocks() {
+    // Check if Elwynn Forest is completed (100% knowledge)
+    const elwynnForest = worldMaps[0];
+    if (elwynnForest.knowledge >= 100 && !gameState.unlockedMaps.includes(1)) {
+        // Unlock Westfall
+        worldMaps[1].unlocked = true;
+        gameState.unlockedMaps.push(1);
+        
+        // Show notification
+        showMapUnlockNotification("Westfall");
+        console.log("🗺️ New map unlocked: Westfall!");
+    }
+}
 
 function showMissionDiscoveryNotification(missionNames) {
     // Create a temporary notification popup
@@ -874,6 +1096,63 @@ function showMissionDiscoveryNotification(missionNames) {
     setTimeout(() => {
         notification.remove();
     }, 4000);
+}
+function checkMapUnlocks() {
+    // Check if Elwynn Forest is completed (100% knowledge)
+    const elwynnForest = worldMaps[0];
+    if (elwynnForest.knowledge >= 100 && !gameState.unlockedMaps.includes(1)) {
+        // Unlock Westfall
+        worldMaps[1].unlocked = true;
+        gameState.unlockedMaps.push(1);
+        
+        // Show notification
+        showMapUnlockNotification("Westfall");
+        console.log("🗺️ New map unlocked: Westfall!");
+    }
+}
+
+function showMapUnlockNotification(mapName) {
+    // Create a map unlock notification
+    const notification = document.createElement('div');
+    notification.className = 'map-unlock-notification';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        padding: 20px 24px;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(245, 158, 11, 0.4);
+        z-index: 1001;
+        font-weight: 700;
+        border: 3px solid #fbbf24;
+        text-align: center;
+        min-width: 300px;
+        font-size: 1.1em;
+    `;
+    
+    notification.innerHTML = `
+        <div style="font-size: 1.3em; margin-bottom: 8px;">🗺️ NEW AREA UNLOCKED!</div>
+        <div style="font-size: 1.1em;">${mapName}</div>
+        <div style="font-size: 0.9em; margin-top: 8px; opacity: 0.9;">Check your World Map!</div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 6 seconds (longer for map unlocks)
+    setTimeout(() => {
+        notification.remove();
+    }, 6000);
+}
+
+function switchToMap(mapIndex) {
+    if (gameState.unlockedMaps.includes(mapIndex)) {
+        gameState.currentMap = mapIndex;
+        updateWorldMapTab();
+        console.log(`🗺️ Switched to ${worldMaps[mapIndex].name}`);
+    }
 }
 
 function showFloatingMissionTracker(mission, duration) {
