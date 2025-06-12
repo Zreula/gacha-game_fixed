@@ -7,40 +7,35 @@ function addItemToInventory(itemId, quantity = 1) {
         return false;
     }
     
-    // Check if item already exists in inventory
-    const existingItem = gameState.inventory.items.find(item => item.id === itemId);
+    let remainingQuantity = quantity;
     
-    if (existingItem) {
-        // Stack with existing item
-        const canAdd = Math.min(quantity, itemData.maxStack - existingItem.quantity);
-        existingItem.quantity += canAdd;
-        
-        // If couldn't add all, create new stack
-        if (canAdd < quantity) {
-            const remaining = quantity - canAdd;
-            return addItemToInventory(itemId, remaining);
+    // Try to stack with existing items first
+    for (let existingItem of gameState.inventory.items) {
+        if (existingItem.id === itemId && remainingQuantity > 0) {
+            const canAdd = Math.min(remainingQuantity, itemData.maxStack - existingItem.quantity);
+            existingItem.quantity += canAdd;
+            remainingQuantity -= canAdd;
         }
-        return true;
-    } else {
+    }
+    
+    // Create new stacks if needed
+    while (remainingQuantity > 0) {
         // Check if we have inventory space
         if (gameState.inventory.items.length >= gameState.inventory.maxSlots) {
-            console.log("Inventory full!");
+            console.log(`Inventory full! Could not add ${remainingQuantity} ${itemData.name}`);
             return false;
         }
         
-        // Add new item
-        const toAdd = Math.min(quantity, itemData.maxStack);
+        // Add new stack
+        const toAdd = Math.min(remainingQuantity, itemData.maxStack);
         gameState.inventory.items.push({
             id: itemId,
             quantity: toAdd
         });
-        
-        // If couldn't add all, try to add remaining
-        if (toAdd < quantity) {
-            return addItemToInventory(itemId, quantity - toAdd);
-        }
-        return true;
+        remainingQuantity -= toAdd;
     }
+    
+    return true;
 }
 
 function getInventoryItemsFiltered(filter = "all") {
@@ -82,6 +77,12 @@ function removeItemFromInventory(itemId, quantity = 1) {
 function updateInventoryTab() {
     const inventoryTab = document.getElementById('inventory-tab');
     
+    // PROTECTION: Vérifier que l'élément existe
+    if (!inventoryTab) {
+        console.warn('Inventory tab element not found');
+        return;
+    }
+    
     inventoryTab.innerHTML = `
         <div class="content-header">
             <h1>Inventory</h1>
@@ -101,6 +102,19 @@ function updateInventoryTab() {
                 <div class="inventory-content">
                     ${generateInventoryItems()}
                 </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🧪 Quick Actions</div>
+                </div>
+                <button class="btn btn-secondary" onclick="addItemToInventory('linen_cloth', 5)">
+                    +5 Linen Cloth (Test)
+                </button>
+                <button class="btn btn-secondary" onclick="addItemToInventory('minor_potion', 2)">
+                    +2 Potions (Test)
+                </button>
             </div>
         </div>
     `;
@@ -170,5 +184,10 @@ function getItemTypeIcon(type) {
 
 function setInventoryFilter(filter) {
     gameState.inventory.currentFilter = filter;
-    updateInventoryTab();
+
+        // PROTECTION: Vérifier que l'onglet inventory est actif
+    const inventoryTab = document.getElementById('inventory-tab');
+    if (inventoryTab && inventoryTab.classList.contains('active')) {
+        updateInventoryTab();
+    }
 }
