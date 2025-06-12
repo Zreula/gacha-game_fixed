@@ -516,8 +516,6 @@ function startMission(missionId) {
     
     console.log(`✅ Mission state set: ${!!gameState.missionInProgress}`);
     
-    // PRIORITÉ 2: Mettre à jour l'UI APRÈS avoir mis le state
-    updateWorldMapTab(); // Refresh pour désactiver les boutons
     
     // PRIORITÉ 3: Afficher les éléments de progression
     showMissionProgress(mission, duration);
@@ -586,6 +584,12 @@ function showMissionProgress(mission, duration) {
         return;
     }
     
+    // Supprimer toute progression existante
+    const existingProgress = document.getElementById('missionProgress');
+    if (existingProgress) {
+        existingProgress.remove();
+    }
+    
     const progressSection = document.createElement('div');
     progressSection.className = 'mission-progress';
     progressSection.id = 'missionProgress';
@@ -601,20 +605,35 @@ function showMissionProgress(mission, duration) {
     const contentSection = worldmapTab.querySelector('.content-section');
     if (contentSection) {
         contentSection.insertBefore(progressSection, contentSection.firstChild);
+        console.log('✅ Mission progress element added');
     }
     
-    // Start countdown avec protection
+    // DISABLE mission buttons immediately (sans refaire toute l'UI)
+    const missionButtons = document.querySelectorAll('.btn');
+    missionButtons.forEach(btn => {
+        if (btn.textContent.includes('Start Mission')) {
+            btn.disabled = true;
+            btn.textContent = 'Mission in Progress...';
+        }
+    });
+    
+    // Start countdown avec protection RENFORCÉE
     let timeLeft = duration;
     const timer = setInterval(() => {
         timeLeft--;
         
-        // PROTECTION: Vérifier que l'élément existe avant de le modifier
+        // PROTECTION: Vérifier que l'élément existe ET que la mission est toujours active
         const timerElement = document.getElementById('progressTimer');
-        if (timerElement) {
+        if (timerElement && gameState.missionInProgress) {
             timerElement.textContent = `${timeLeft}s`;
+        } else if (!gameState.missionInProgress) {
+            // Mission terminée normalement
+            console.log('✅ Mission completed, stopping progress timer');
+            clearInterval(timer);
+            return;
         } else {
-            // Si l'élément n'existe plus, arrêter le timer
-            console.warn('Progress timer element not found, stopping timer');
+            // Élément manquant mais mission active = problème
+            console.warn('⚠️ Progress timer element missing but mission active');
             clearInterval(timer);
             return;
         }
@@ -623,28 +642,20 @@ function showMissionProgress(mission, duration) {
             clearInterval(timer);
         }
     }, 1000);
-    
-    // Disable mission buttons during combat
-    const missionButtons = document.querySelectorAll('.btn');
-    missionButtons.forEach(btn => {
-        if (btn.textContent.includes('Start Mission')) {
-            btn.disabled = true;
-            btn.textContent = 'Mission in Progress...';
-        }
-    });
 }
 
 function completeMission(mission) {
-    // NOUVEAU: Nettoyer le tracking de mission
+    // PRIORITÉ 1: Nettoyer le tracking de mission
     if (gameState.missionInProgress && gameState.missionInProgress.timer) {
-        clearInterval(gameState.missionInProgress.timer); // Arrêter le timer de mise à jour
+        clearInterval(gameState.missionInProgress.timer);
     }
-    gameState.missionInProgress = null; // Nettoyer l'état
+    gameState.missionInProgress = null;
     
-    // NOUVEAU: Cacher la fenêtre flottante
+    console.log('✅ Mission state cleared');
+    
+    // PRIORITÉ 2: Cacher les éléments de progression
     hideFloatingMissionTracker();
     
-    // Remove progress display (existing)
     const progressElement = document.getElementById('missionProgress');
     if (progressElement) {
         progressElement.remove();
@@ -681,22 +692,6 @@ function completeMission(mission) {
                 hero.currentLevel++;
                 hero.xpToNext = Math.floor(hero.xpToNext * 1.2);
             }
-
-            // Update UI
-            updatePlayerUI();
-            updateWorldMapTab();
-            
-            // NOUVEAU: Afficher les level ups en attente
-            if (gameState.pendingLevelUps && gameState.pendingLevelUps.length > 0) {
-                setTimeout(() => {
-                    gameState.pendingLevelUps.forEach((level, index) => {
-                        setTimeout(() => {
-                            showLevelUpNotification(level);
-                        }, index * 1000); // 1 second delay between level ups
-                    });
-                    gameState.pendingLevelUps = [];
-                }, 1000); // Attendre 1 seconde après la modal de mission
-            }
         });
         
         // Check for new mission unlocks
@@ -721,9 +716,21 @@ function completeMission(mission) {
     // Show results modal
     showMissionResults(mission, missionResults);
     
-    // Update UI
+    // À LA FIN: Mettre à jour l'UI pour réactiver les boutons
     updatePlayerUI();
-    updateWorldMapTab();
+    updateWorldMapTab(); // Maintenant c'est safe de le faire
+    
+    // NOUVEAU: Afficher les level ups en attente
+    if (gameState.pendingLevelUps && gameState.pendingLevelUps.length > 0) {
+        setTimeout(() => {
+            gameState.pendingLevelUps.forEach((level, index) => {
+                setTimeout(() => {
+                    showLevelUpNotification(level);
+                }, index * 1000); // 1 second delay between level ups
+            });
+            gameState.pendingLevelUps = [];
+        }, 1000); // Attendre 1 seconde après la modal de mission
+    }
 }
 
 
