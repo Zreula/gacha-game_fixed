@@ -382,24 +382,22 @@ function updateWorldMapTab() {
 function generateMissionCards() {
     const currentMapData = worldMaps[gameState.currentMap];
     
-    // Filter to show only missions that meet knowledge requirements (SECRET SYSTEM!)
     const visibleMissions = currentMapData.missions.filter(mission => 
         currentMapData.knowledge >= mission.knowledgeRequired
     );
     
-    console.log(`Generating ${visibleMissions.length} mission cards`);
-    console.log(`Selected team size: ${gameState.selectedTeam.length}`);
-    console.log(`Mission in progress: ${!!gameState.missionInProgress}`);
+    // RÉDUIRE: Un seul log au lieu de plusieurs
+    console.log(`🎯 Missions: ${visibleMissions.length} visible, team: ${gameState.selectedTeam.length}, inProgress: ${!!gameState.missionInProgress}`);
     
     return visibleMissions.map(mission => {
-        // Debug logging
         const hasTeam = gameState.selectedTeam.length > 0;
         const noMissionInProgress = !gameState.missionInProgress;
         const missionUnlocked = mission.unlocked;
         
         const canStart = hasTeam && noMissionInProgress && missionUnlocked;
         
-        console.log(`Mission ${mission.name}: team=${hasTeam}, noMissionInProgress=${noMissionInProgress}, unlocked=${missionUnlocked}, canStart=${canStart}`);
+        // SUPPRIMER: Ces logs détaillés
+        // console.log(`Mission ${mission.name}: team=${hasTeam}, noMissionInProgress=${noMissionInProgress}, unlocked=${missionUnlocked}, canStart=${canStart}`);
         
         let buttonSection = '';
         
@@ -500,15 +498,15 @@ function startMission(missionId) {
     
     // Mission duration based on difficulty
     const missionDurations = {
-        "Easy": 5,    // 5 seconds
-        "Medium": 15,  // 15 seconds  
-        "Hard": 30,     // 30 seconds
-        "Very Hard": 60 // 60 seconds
+        "Easy": 5,
+        "Medium": 15,
+        "Hard": 30,
+        "Very Hard": 60
     };
     
     const duration = missionDurations[mission.difficulty] || 20;
 
-    // NOUVEAU: Sauvegarder dans gameState
+    // PRIORITÉ 1: Sauvegarder dans gameState EN PREMIER
     gameState.missionInProgress = {
         mission,
         startTime: Date.now(),
@@ -516,19 +514,24 @@ function startMission(missionId) {
         timer: null
     };
     
-    // Show mission in progress
+    console.log(`✅ Mission state set: ${!!gameState.missionInProgress}`);
+    
+    // PRIORITÉ 2: Mettre à jour l'UI APRÈS avoir mis le state
+    updateWorldMapTab(); // Refresh pour désactiver les boutons
+    
+    // PRIORITÉ 3: Afficher les éléments de progression
     showMissionProgress(mission, duration);
-
-    // Show floating tracker
     showFloatingMissionTracker(mission, duration);
     
+    // PRIORITÉ 4: Démarrer les timers
     gameState.missionInProgress.timer = setInterval(updateMissionTracker, 1000);
 
-    // Start mission timer
+    // PRIORITÉ 5: Démarrer le timer de mission
     setTimeout(() => {
         completeMission(mission);
     }, duration * 1000);
 }
+
 function hideFloatingMissionTracker() {
     const tracker = document.getElementById('floatingMissionTracker');
     if (tracker) {
