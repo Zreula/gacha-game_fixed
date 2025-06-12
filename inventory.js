@@ -103,19 +103,6 @@ function updateInventoryTab() {
                     ${generateInventoryItems()}
                 </div>
             </div>
-            
-            <!-- Quick Actions -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">🧪 Quick Actions</div>
-                </div>
-                <button class="btn btn-secondary" onclick="addItemToInventory('linen_cloth', 5)">
-                    +5 Linen Cloth (Test)
-                </button>
-                <button class="btn btn-secondary" onclick="addItemToInventory('minor_potion', 2)">
-                    +2 Potions (Test)
-                </button>
-            </div>
         </div>
     `;
 }
