@@ -106,8 +106,11 @@ function addPlayerXP(amount) {
     
     // Show level up notifications only if no mission in progress
     if (levelUpsToShow.length > 0 && !gameState.missionInProgress) {
-        levelUpsToShow.forEach(level => {
-            alert(`🎉 Level Up! You are now level ${level}!`);
+        // Show immediately with delay between multiple level ups
+        levelUpsToShow.forEach((level, index) => {
+            setTimeout(() => {
+                showLevelUpNotification(level);
+            }, index * 1000); // 1 second delay between level ups
         });
     } else if (levelUpsToShow.length > 0) {
         // Store level ups to show after mission
@@ -128,7 +131,46 @@ function levelUpPlayer() {
     // Show level up notification (todo: nice UI popup)
     alert(`🎉 Level Up! You are now level ${gameState.playerLevel}!`);
 }
+function showLevelUpNotification(newLevel) {
+    // Remove existing level up notification if any
+    hideLevelUpNotification();
+    
+    // Create level up notification
+    const notification = document.createElement('div');
+    notification.className = 'level-up-notification';
+    notification.id = 'levelUpNotification';
+    
+    notification.innerHTML = `
+        <div class="level-up-header">
+            <span>🎉 LEVEL UP!</span>
+        </div>
+        <div class="level-up-content">
+            <div class="level-up-title">Level ${newLevel}</div>
+            <div class="level-up-subtitle">Guild Master Rank Increased!</div>
+            <div class="level-up-stats">
+                <div>Next Level: ${gameState.playerXPToNext} XP</div>
+                ${newLevel % 10 === 0 ? '<div style="color: #10b981;">🆕 New Heroes Available!</div>' : ''}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        hideLevelUpNotification();
+    }, 4000);
+}
 
+function hideLevelUpNotification() {
+    const notification = document.getElementById('levelUpNotification');
+    if (notification) {
+        notification.classList.add('level-up-sliding-out');
+        setTimeout(() => {
+            notification.remove();
+        }, 300); // Wait for animation
+    }
+}
 function checkHeroUnlocks() {
     let newHeroUnlocked = false;
     
@@ -142,9 +184,40 @@ function checkHeroUnlocks() {
     
     if (newHeroUnlocked) {
         updateHeroesTab();
-        // Show unlock notification (todo: nice UI popup)
-        alert("🦸‍♂️ New hero unlocked! Check your Heroes tab!");
+        // NOUVEAU: Notification élégante au lieu d'alert
+        showHeroUnlockNotification();
     }
+}
+
+function showHeroUnlockNotification() {
+    // Create a hero unlock notification
+    const notification = document.createElement('div');
+    notification.className = 'level-up-notification';
+    notification.style.cssText += `
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border-color: #34d399;
+        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.6);
+    `;
+    
+    notification.innerHTML = `
+        <div class="level-up-header" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">
+            <span>🦸‍♂️ NEW HERO UNLOCKED!</span>
+        </div>
+        <div class="level-up-content">
+            <div class="level-up-title">Heroes Available!</div>
+            <div class="level-up-subtitle">Check your Heroes tab</div>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        notification.classList.add('level-up-sliding-out');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 4000);
 }
 
 // ===== UI UPDATE FUNCTIONS =====
@@ -613,8 +686,10 @@ function completeMission(mission) {
             // NOUVEAU: Afficher les level ups en attente
             if (gameState.pendingLevelUps && gameState.pendingLevelUps.length > 0) {
                 setTimeout(() => {
-                    gameState.pendingLevelUps.forEach(level => {
-                        alert(`🎉 Level Up! You are now level ${level}!`);
+                    gameState.pendingLevelUps.forEach((level, index) => {
+                        setTimeout(() => {
+                            showLevelUpNotification(level);
+                        }, index * 1000); // 1 second delay between level ups
                     });
                     gameState.pendingLevelUps = [];
                 }, 1000); // Attendre 1 seconde après la modal de mission
