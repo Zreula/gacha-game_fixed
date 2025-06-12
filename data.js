@@ -42,7 +42,7 @@ const heroes = [
         crit: 12, 
         hp: 600, 
         def: 30, 
-        unlockLevel: 10,
+        unlockLevel: 20,
         currentLevel: 1,
         currentXP: 0,
         xpToNext: 100
@@ -58,7 +58,7 @@ const heroes = [
         crit: 10, 
         hp: 500, 
         def: 20, 
-        unlockLevel: 20,
+        unlockLevel: 30,
         currentLevel: 1,
         currentXP: 0,
         xpToNext: 100

@@ -89,13 +89,33 @@ function setupNavigation() {
 function addPlayerXP(amount) {
     gameState.playerXP += amount;
     
-    // Check for level up
+    // Check for level up, but defer notifications if mission in progress
+    const levelUpsToShow = [];
+    
     while (gameState.playerXP >= gameState.playerXPToNext) {
-        levelUpPlayer();
+        gameState.playerXP -= gameState.playerXPToNext;
+        gameState.playerLevel++;
+        gameState.playerXPToNext = Math.floor(gameState.playerXPToNext * 1.15);
+        
+        console.log(`🎉 Player leveled up to ${gameState.playerLevel}!`);
+        levelUpsToShow.push(gameState.playerLevel);
     }
     
     updatePlayerUI();
     checkHeroUnlocks();
+    
+    // Show level up notifications only if no mission in progress
+    if (levelUpsToShow.length > 0 && !gameState.missionInProgress) {
+        levelUpsToShow.forEach(level => {
+            alert(`🎉 Level Up! You are now level ${level}!`);
+        });
+    } else if (levelUpsToShow.length > 0) {
+        // Store level ups to show after mission
+        if (!gameState.pendingLevelUps) {
+            gameState.pendingLevelUps = [];
+        }
+        gameState.pendingLevelUps.push(...levelUpsToShow);
+    }
 }
 
 function levelUpPlayer() {
@@ -247,7 +267,20 @@ function updateWorldMapTab() {
             </div>
         </div>
     ` : '';
-    
+    // Dans updateWorldMapTab(), ajoute ce bouton de debug après le sélecteur de maps
+    const debugSection = `
+        <div class="card" style="background: rgba(220, 38, 38, 0.1); border-color: #dc2626;">
+            <div class="card-header">
+                <div class="card-title">🔧 Debug Tools (Temporary)</div>
+            </div>
+            <button class="btn btn-danger" onclick="resetMissionState()">
+                Reset Mission State
+            </button>
+            <p style="font-size: 0.8em; color: #a0a0a0; margin-top: 8px;">
+                Use this if missions are stuck or buttons don't appear
+            </p>
+        </div>
+    `;
     worldmapTab.innerHTML = `
         <div class="content-header">
             <h1>World Map - ${currentMapData.name}</h1>
@@ -281,8 +314,33 @@ function generateMissionCards() {
         currentMapData.knowledge >= mission.knowledgeRequired
     );
     
+    console.log(`Generating ${visibleMissions.length} mission cards`);
+    console.log(`Selected team size: ${gameState.selectedTeam.length}`);
+    console.log(`Mission in progress: ${!!gameState.missionInProgress}`);
+    
     return visibleMissions.map(mission => {
-        const canStart = mission.unlocked && gameState.selectedTeam.length > 0;
+        // Debug logging
+        const hasTeam = gameState.selectedTeam.length > 0;
+        const noMissionInProgress = !gameState.missionInProgress;
+        const missionUnlocked = mission.unlocked;
+        
+        const canStart = hasTeam && noMissionInProgress && missionUnlocked;
+        
+        console.log(`Mission ${mission.name}: team=${hasTeam}, noMissionInProgress=${noMissionInProgress}, unlocked=${missionUnlocked}, canStart=${canStart}`);
+        
+        let buttonSection = '';
+        
+        if (canStart) {
+            buttonSection = `<button class="btn" onclick="startMission(${mission.id})">Start Mission</button>`;
+        } else if (!hasTeam) {
+            buttonSection = '<p style="color: #dc2626;">⚠️ No party selected</p>';
+        } else if (gameState.missionInProgress) {
+            buttonSection = '<p style="color: #f59e0b;">⚠️ Mission already in progress</p>';
+        } else if (!missionUnlocked) {
+            buttonSection = '<p style="color: #6b7280;">🔒 Mission locked</p>';
+        } else {
+            buttonSection = '<p style="color: #dc2626;">⚠️ Cannot start mission</p>';
+        }
         
         return `
             <div class="card">
@@ -291,13 +349,39 @@ function generateMissionCards() {
                 </div>
                 <p>${mission.description}</p>
                 <p><strong>Rewards:</strong> ${mission.goldReward}💰 ${mission.xpReward}⭐ ${mission.knowledgeReward}📖</p>
-                ${canStart ? `<button class="btn" onclick="startMission(${mission.id})">Start Mission</button>` : ''}
-                ${gameState.selectedTeam.length === 0 ? '<p style="color: #dc2626;">⚠️ No party selected</p>' : ''}
+                ${buttonSection}
             </div>
         `;
     }).join('');
 }
-
+function resetMissionState() {
+    // Function to manually reset mission state if stuck
+    if (gameState.missionInProgress && gameState.missionInProgress.timer) {
+        clearInterval(gameState.missionInProgress.timer);
+    }
+    gameState.missionInProgress = null;
+    
+    // Remove any mission progress displays
+    const progressElement = document.getElementById('missionProgress');
+    if (progressElement) {
+        progressElement.remove();
+    }
+    
+    // Hide floating tracker
+    hideFloatingMissionTracker();
+    
+    // Re-enable mission buttons
+    const missionButtons = document.querySelectorAll('.btn');
+    missionButtons.forEach(btn => {
+        if (btn.textContent.includes('Mission in Progress')) {
+            btn.disabled = false;
+            btn.textContent = 'Start Mission';
+        }
+    });
+    
+    updateWorldMapTab();
+    console.log('🔧 Mission state reset manually');
+}
 // ===== HERO MANAGEMENT =====
 
 function toggleHeroInParty(heroIndex) {
@@ -384,14 +468,21 @@ function hideFloatingMissionTracker() {
 
 function updateMissionTracker() {
     const tracker = document.getElementById('floatingMissionTracker');
-    if (!tracker || !gameState.missionInProgress) return;
+    if (!tracker || !gameState.missionInProgress) {
+        // Si le tracker n'existe plus, nettoyer le timer
+        if (gameState.missionInProgress && gameState.missionInProgress.timer) {
+            clearInterval(gameState.missionInProgress.timer);
+            gameState.missionInProgress = null;
+        }
+        return;
+    }
     
     const { startTime, duration } = gameState.missionInProgress;
-    const elapsed = (Date.now() - startTime) / 1000; // secondes écoulées
+    const elapsed = (Date.now() - startTime) / 1000;
     const timeLeft = Math.max(0, duration - elapsed);
     const percentage = Math.min(100, (elapsed / duration) * 100);
     
-    // Mettre à jour les éléments
+    // PROTECTION: Vérifier que tous les éléments existent
     const timeLeftElement = document.getElementById('trackerTimeLeft');
     const percentageElement = document.getElementById('trackerPercentage');
     const progressFill = document.getElementById('trackerProgressFill');
@@ -399,10 +490,26 @@ function updateMissionTracker() {
     if (timeLeftElement) timeLeftElement.textContent = `${Math.ceil(timeLeft)}s`;
     if (percentageElement) percentageElement.textContent = `${Math.round(percentage)}%`;
     if (progressFill) progressFill.style.width = `${percentage}%`;
+    
+    // Si les éléments n'existent plus, arrêter le tracker
+    if (!timeLeftElement || !percentageElement || !progressFill) {
+        console.warn('Tracker elements missing, cleaning up');
+        if (gameState.missionInProgress && gameState.missionInProgress.timer) {
+            clearInterval(gameState.missionInProgress.timer);
+            gameState.missionInProgress = null;
+        }
+    }
 }
 
 function showMissionProgress(mission, duration) {
     const worldmapTab = document.getElementById('worldmap-tab');
+    
+    // PROTECTION: Vérifier que l'onglet existe
+    if (!worldmapTab) {
+        console.warn('World map tab not found');
+        return;
+    }
+    
     const progressSection = document.createElement('div');
     progressSection.className = 'mission-progress';
     progressSection.id = 'missionProgress';
@@ -416,13 +523,25 @@ function showMissionProgress(mission, duration) {
     
     // Insert at the top of content-section
     const contentSection = worldmapTab.querySelector('.content-section');
-    contentSection.insertBefore(progressSection, contentSection.firstChild);
+    if (contentSection) {
+        contentSection.insertBefore(progressSection, contentSection.firstChild);
+    }
     
-    // Start countdown
+    // Start countdown avec protection
     let timeLeft = duration;
     const timer = setInterval(() => {
         timeLeft--;
-        document.getElementById('progressTimer').textContent = `${timeLeft}s`;
+        
+        // PROTECTION: Vérifier que l'élément existe avant de le modifier
+        const timerElement = document.getElementById('progressTimer');
+        if (timerElement) {
+            timerElement.textContent = `${timeLeft}s`;
+        } else {
+            // Si l'élément n'existe plus, arrêter le timer
+            console.warn('Progress timer element not found, stopping timer');
+            clearInterval(timer);
+            return;
+        }
         
         if (timeLeft <= 0) {
             clearInterval(timer);
@@ -485,6 +604,20 @@ function completeMission(mission) {
                 hero.currentXP -= hero.xpToNext;
                 hero.currentLevel++;
                 hero.xpToNext = Math.floor(hero.xpToNext * 1.2);
+            }
+
+            // Update UI
+            updatePlayerUI();
+            updateWorldMapTab();
+            
+            // NOUVEAU: Afficher les level ups en attente
+            if (gameState.pendingLevelUps && gameState.pendingLevelUps.length > 0) {
+                setTimeout(() => {
+                    gameState.pendingLevelUps.forEach(level => {
+                        alert(`🎉 Level Up! You are now level ${level}!`);
+                    });
+                    gameState.pendingLevelUps = [];
+                }, 1000); // Attendre 1 seconde après la modal de mission
             }
         });
         
