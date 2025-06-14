@@ -1,82 +1,170 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Infernal WoW</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Infernal Wow - Idle RPG</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<body>
-    <div class="game-container">
-        <!-- Sidebar Navigation -->
-        <nav class="sidebar">
-            <div class="sidebar-header">
-                <div class="game-title">⚔️ Infernal WoW</div>
-                <div class="game-subtitle">Guild Manager</div>
+    <div id="app">
+        <!-- Header -->
+        <header id="top-bar">
+            <div class="player-info">
+                <span id="player-global-level">Global Level: 0</span>
             </div>
-            
-            <div class="nav-tabs">
-                <button class="nav-tab active" data-tab="heroes">
-                    <span class="tab-icon">👥</span>
-                    <span class="tab-text">Heroes</span>
-                </button>
-                <button class="nav-tab" data-tab="worldmap">
-                    <span class="tab-icon">🗺️</span>
-                    <span class="tab-text">World Map</span>
-                </button>
-                <button class="nav-tab" data-tab="inventory">
-                    <span class="tab-icon">🎒</span>
-                    <span class="tab-text">Inventory</span>
-                </button>
+            <h1>Infernal Wow</h1>
+            <div class="game-controls">
+                <button id="settings-btn" disabled>⚙️</button>
+                <button id="save-btn" disabled>💾</button>
             </div>
-            
-            <!-- Player Status -->
-            <div class="player-status">
-                <div class="player-info">
-                    <div class="player-name">Guild Master</div>
-                    <div class="player-level">Level <span id="playerLevel">1</span></div>
+        </header>
+
+        <div id="main-layout">
+            <!-- Sidebar -->
+            <nav id="sidebar">
+                <div class="nav-section">
+                    <h3>Skills</h3>
+                    <button class="nav-btn active" data-section="mining-section">
+                        ⛏️ Mining
+                        <span class="skill-level" id="nav-mining-level">1</span>
+                    </button>
+                    <button class="nav-btn" data-section="herbalism-section">
+                        🌿 Herbalism
+                        <span class="skill-level" id="nav-herbalism-level">1</span>
+                    </button>
+                    <button class="nav-btn" data-section="crafting-section">
+                        🔧 Crafting
+                        <span class="skill-level" id="nav-crafting-level">1</span>
+                    </button>
+                    <button class="nav-btn" data-section="smithing-section">
+                        ⚒️ Smithing
+                        <span class="skill-level" id="nav-smithing-level">1</span>
+                    </button>
                 </div>
-                <div class="xp-bar">
-                    <div class="xp-fill" id="xpFill" style="width: 0%"></div>
-                    <div class="xp-text"><span id="currentXP">0</span> / <span id="maxXP">100</span></div>
+                <div class="nav-section">
+                    <h3>Combat</h3>
+                    <button class="nav-btn disabled" data-section="combat-section">
+                        ⚔️ Combat
+                    </button>
                 </div>
-                <div class="resources">
-                    <div class="resource">💰 <span id="goldAmount">0</span></div>
+                <div class="nav-section">
+                    <h3>Other</h3>
+                    <button class="nav-btn" data-section="inventory-section">
+                        🎒 Inventory
+                    </button>
                 </div>
-            </div>
-        </nav>
-        
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <!-- Heroes Tab -->
-            <div class="tab-content active" id="heroes-tab">
-                <div class="content-header">
-                    <h1>Heroes Management</h1>
-                </div>
-                <!-- Heroes content here -->
-            </div>
-            
-            <!-- World Map Tab -->
-            <div class="tab-content" id="worldmap-tab">
-                <div class="content-header">
-                    <h1>World Map</h1>
-                </div>
-                <!-- World map content here -->
-            </div>
-            
-            <!-- Inventory Tab -->
-            <div class="tab-content" id="inventory-tab">
-                <div class="content-header">
-                    <h1>Inventory</h1>
-                </div>
-                <!-- Inventory content here -->
-            </div>
-        </main>
+            </nav>
+
+            <!-- Main Content -->
+            <main id="content-area">
+                <!-- Mining Section -->
+                <section id="mining-section" class="content-section active">
+                    <div class="section-header">
+                        <h2>⛏️ Mining</h2>
+                        <div class="skill-info">
+                            <span id="mining-level">Level 1</span>
+                            <div class="xp-bar">
+                                <div class="xp-progress" id="mining-xp-bar"></div>
+                            </div>
+                            <span class="xp-text" id="mining-xp-text">0 / 100 XP</span>
+                        </div>
+                    </div>
+                        <div class="activity-area">
+                            <div class="resources-grid">
+                                <h3>Available Resources</h3>
+                                <div id="mining-resources" class="resource-list"></div>
+                            </div>
+                        </div>
+                    <div class="activity-log">
+                        <h3>Mining Log</h3>
+                        <div id="mining-log" class="log-container"></div>
+                    </div>
+                </section>
+                <!-- Herbalism Section -->
+                <section id="herbalism-section" class="content-section">
+                    <div class="section-header">
+                        <h2>🌿 Herbalism</h2>
+                        <div class="skill-info">
+                            <span id="herbalism-level">Level 1</span>
+                            <div class="xp-bar">
+                                <div class="xp-progress" id="herbalism-xp-bar"></div>
+                            </div>
+                            <span class="xp-text" id="herbalism-xp-text">0 / 100 XP</span>
+                        </div>
+                    </div>
+                    <div class="activity-area">
+                        <div class="resources-grid">
+                            <h3>Available Herbs</h3>
+                            <div id="herbalism-resources" class="resource-list"></div>
+                        </div>
+                    </div>
+                    <div class="activity-log">
+                        <h3>Herbs Log</h3>
+                        <div id="herbalism-log" class="log-container"></div>
+                    </div>
+                </section>
+                <!-- Crafting Section -->
+                <section id="crafting-section" class="content-section">
+                    <div class="section-header">
+                        <h2>🔧 Crafting</h2>
+                        <div class="skill-info">
+                            <span id="crafting-level">Level 1</span>
+                            <div class="xp-bar">
+                                <div class="xp-progress" id="crafting-xp-bar"></div>
+                            </div>
+                            <span class="xp-text" id="crafting-xp-text">0 / 100 XP</span>
+                        </div>
+                    </div>
+                    <div class="activity-area">
+                        <div class="resources-grid">
+                            <h3>Available Resources</h3>
+                            <div id="crafting-resources" class="resource-list"></div>
+                        </div>
+                    </div>
+                    <div class="activity-log">
+                        <h3>Crafting Log</h3>
+                        <div id="crafting-log" class="log-container"></div>
+                    </div>
+                </section>
+                <!-- Smithing Section -->
+                <section id="smithing-section" class="content-section">
+                    <div class="section-header">
+                        <h2>⚒️ Smithing</h2>
+                        <div class="skill-info">
+                            <span id="smithing-level">Level 1</span>
+                            <div class="xp-bar">
+                                <div class="xp-progress" id="smithing-xp-bar"></div>
+                            </div>
+                            <span class="xp-text" id="smithing-xp-text">0 / 100 XP</span>
+                        </div>
+                    </div>
+                    <div class="activity-area">
+                        <div class="resources-grid">
+                            <h3>Available Items</h3>
+                            <div id="smithing-items" class="resource-list"></div>
+                        </div>
+                    </div>
+                    <div class="activity-log">
+                        <h3>Smithing Log</h3>
+                        <div id="smithing-log" class="log-container"></div>
+                    </div>
+                </section>
+                <!-- Inventory Section -->
+                <section id="inventory-section" class="content-section">
+                    <div class="section-header">
+                        <h2>🎒 Inventory</h2>
+                    </div>
+                    <div id="inventory-grid" class="inventory-container"></div>
+                </section>
+            </main>
+        </div>
     </div>
-    <script src="data.js"></script>
-    <script src="loot.js"></script>
-    <script src="inventory.js"></script>
-    <script src="main.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/mining.js"></script>
+    <script src="js/herbalism.js"></script>
+    <script src="js/crafting.js"></script>
+    <script src="js/inventory.js"></script>
+    <script src="js/smithing.js"></script>
 </body>
 </html>

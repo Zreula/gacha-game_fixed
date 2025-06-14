@@ -1,0 +1,29 @@
+{
+  "resources": [
+    {
+      "id": "copper",
+      "name": "Copper Ore",
+      "levelRequired": 1,
+      "xp": 10,
+      "miningTime": 2000,
+      "icon": "🪙"
+    },
+    {
+      "id": "iron",
+      "name": "Iron Ore", 
+      "levelRequired": 5,
+      "xp": 25,
+      "miningTime": 3000,
+      "icon": "⛓️"
+    },
+    {
+      "id": "coal",
+      "name": "Coal",
+      "levelRequired": 10,
+      "xp": 40,
+      "miningTime": 4000,
+      "icon": "⚫"
+    }
+  ],
+  "xpTable": [0, 100, 250, 500, 1000, 1750, 2800, 4200, 6000, 8300]
+}
